@@ -11,48 +11,22 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-:root{
-  --brand:#4f46e5;--brand-dark:#4338ca;--brand-light:#eef2ff;--brand-soft:#e0e7ff;
-  --present:#10b981;--present-bg:#ecfdf5;--present-dark:#047857;
-  --leave:#f59e0b;--leave-bg:#fffbeb;--leave-dark:#b45309;
-  --absent:#f43f5e;--absent-bg:#fff1f2;--absent-dark:#be123c;
-  --sick:#fb923c;--sick-bg:#fff7ed;--sick-dark:#c2410c;
-  --ink:#0f172a;--ink-2:#334155;--ink-3:#64748b;--ink-4:#94a3b8;
-  --line:#e2e8f0;--line-2:#f1f5f9;--paper:#fff;--bg:#f8fafc;
-  --skel:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%);
-  --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:20px;--r-full:9999px;
-  --sh-1:0 1px 2px 0 rgba(15,23,42,.04);--sh-2:0 4px 6px -1px rgba(15,23,42,.06);
-  --sh-3:0 10px 15px -3px rgba(15,23,42,.08);--sh-4:0 20px 25px -5px rgba(15,23,42,.10);
-  --topbar-h:60px;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
-}
-[data-theme="dark"]{
-  --ink:#f1f5f9;--ink-2:#cbd5e1;--ink-3:#94a3b8;--ink-4:#64748b;
-  --line:#1e293b;--line-2:#1a2436;--paper:#0f172a;--bg:#020617;
-  --brand-light:#1e1b4b;--brand-soft:#312e81;
-  --present-bg:#064e3b;--leave-bg:#78350f;--absent-bg:#7f1d1d;--sick-bg:#7c2d12;
-  --present-dark:#6ee7b7;--leave-dark:#fcd34d;--absent-dark:#fda4af;--sick-dark:#fdba74;
-  --skel:linear-gradient(90deg,#1e293b 25%,#334155 50%,#1e293b 75%);
-  --sh-1:0 1px 2px 0 rgba(0,0,0,.3);--sh-2:0 4px 6px -1px rgba(0,0,0,.4);
-  --sh-3:0 10px 15px -3px rgba(0,0,0,.5);--sh-4:0 20px 25px -5px rgba(0,0,0,.6);
-}
+:root{--brand:#4f46e5;--brand-dark:#4338ca;--brand-light:#eef2ff;--brand-soft:#e0e7ff;--present:#10b981;--present-bg:#ecfdf5;--present-dark:#047857;--leave:#f59e0b;--leave-bg:#fffbeb;--leave-dark:#b45309;--absent:#f43f5e;--absent-bg:#fff1f2;--absent-dark:#be123c;--sick:#fb923c;--sick-bg:#fff7ed;--sick-dark:#c2410c;--ink:#0f172a;--ink-2:#334155;--ink-3:#64748b;--ink-4:#94a3b8;--line:#e2e8f0;--line-2:#f1f5f9;--paper:#fff;--bg:#f8fafc;--skel:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%);--r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:20px;--r-full:9999px;--sh-1:0 1px 2px 0 rgba(15,23,42,.04);--sh-2:0 4px 6px -1px rgba(15,23,42,.06);--sh-3:0 10px 15px -3px rgba(15,23,42,.08);--sh-4:0 20px 25px -5px rgba(15,23,42,.10);--topbar-h:60px;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
+[data-theme="dark"]{--ink:#f1f5f9;--ink-2:#cbd5e1;--ink-3:#94a3b8;--ink-4:#64748b;--line:#1e293b;--line-2:#1a2436;--paper:#0f172a;--bg:#020617;--brand-light:#1e1b4b;--brand-soft:#312e81;--present-bg:#064e3b;--leave-bg:#78350f;--absent-bg:#7f1d1d;--sick-bg:#7c2d12;--present-dark:#6ee7b7;--leave-dark:#fcd34d;--absent-dark:#fda4af;--sick-dark:#fdba74;--skel:linear-gradient(90deg,#1e293b 25%,#334155 50%,#1e293b 75%);--sh-1:0 1px 2px 0 rgba(0,0,0,.3);--sh-2:0 4px 6px -1px rgba(0,0,0,.4);--sh-3:0 10px 15px -3px rgba(0,0,0,.5);--sh-4:0 20px 25px -5px rgba(0,0,0,.6)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%;background:var(--bg)}
 body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
 body.no-scroll{overflow:hidden}
-a{color:inherit}button{font-family:inherit}
-img{max-width:100%;height:auto;display:block}
+a{color:inherit}button{font-family:inherit}img{max-width:100%;height:auto;display:block}
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:6px;border:2px solid var(--bg)}
 [data-theme="dark"] ::-webkit-scrollbar-thumb{background:#334155}
-
 .skel{display:inline-block;background:var(--skel);background-size:200% 100%;animation:skelShimmer 1.4s infinite;border-radius:var(--r-sm);color:transparent!important}
 .skel-text{height:1em;width:100%;max-width:80px}
 .skel-row{height:44px;margin-bottom:8px;border-radius:var(--r-sm)}
 @keyframes skelShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
 .app-layout{display:flex;min-height:100vh;flex-direction:column}
 .main-wrap{flex:1;display:flex;flex-direction:column}
-
 .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 14px;padding-top:var(--safe-top);transition:background .3s}
 [data-theme="dark"] .topbar{background:rgba(15,23,42,.94)}
 .back-btn{width:40px;height:40px;border-radius:var(--r-md);border:1.5px solid var(--line);background:var(--paper);cursor:pointer;display:none;place-items:center;font-size:20px;font-weight:700;color:var(--ink);flex-shrink:0;padding:0;transition:all .15s;line-height:1}
@@ -84,7 +58,6 @@ img{max-width:100%;height:auto;display:block}
 .user-menu button.danger{color:var(--absent)}
 .user-menu button.danger:hover{background:var(--absent-bg)}
 .user-menu .divider{height:1px;background:var(--line);margin:4px 2px}
-
 .page-content{flex:1;padding:22px 24px 80px;max-width:1500px;width:100%;margin:0 auto}
 .page{display:none;animation:fadeUp .25s}
 .page.active{display:block}
@@ -92,7 +65,6 @@ img{max-width:100%;height:auto;display:block}
 .page-head{margin-bottom:22px}
 .page-title{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px}
 .page-sub{color:var(--ink-3);font-size:13.5px}
-
 .menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:24px}
 .menu-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
 .menu-card:hover{transform:translateY(-3px);box-shadow:var(--sh-3);border-color:transparent}
@@ -101,7 +73,6 @@ img{max-width:100%;height:auto;display:block}
 .menu-info{flex:1;min-width:0}
 .menu-title{font-weight:800;font-size:15px;letter-spacing:-.2px;color:var(--ink)}
 .menu-desc{font-size:12.5px;color:var(--ink-3);font-weight:500;margin-top:2px}
-
 .card{background:var(--paper);border-radius:var(--r-lg);padding:20px;border:1px solid var(--line);margin-bottom:18px;box-shadow:var(--sh-1);transition:background .3s,border-color .3s}
 .card-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .btn{padding:10px 18px;border-radius:var(--r-md);border:none;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .18s;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;min-height:42px}
@@ -113,12 +84,10 @@ img{max-width:100%;height:auto;display:block}
 .btn-success{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
 .btn-danger{background:linear-gradient(135deg,#f43f5e,#dc2626);color:#fff}
 .btn-sm{padding:7px 12px;font-size:12.5px;min-height:36px;border-radius:var(--r-sm)}
-
 .filter-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .filter-bar label{font-size:12.5px;font-weight:600;color:var(--ink-3);white-space:nowrap}
 .filter-bar select,.filter-bar input{padding:9px 13px;border:1.5px solid var(--line);border-radius:var(--r-md);font-size:13.5px;font-family:inherit;background:var(--paper);color:var(--ink);font-weight:500;min-height:42px}
 .filter-bar select:focus,.filter-bar input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
-
 .form-group{display:flex;flex-direction:column;margin-bottom:14px}
 .form-group label{font-size:12.5px;font-weight:600;margin-bottom:6px;color:var(--ink-2)}
 .form-group label .req{color:var(--absent)}
@@ -132,7 +101,6 @@ img{max-width:100%;height:auto;display:block}
 .checkbox-group{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:12px;background:var(--bg);border:1.5px solid var(--line);border-radius:var(--r-md)}
 .checkbox-group label{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r-sm);cursor:pointer;font-weight:600;font-size:13px;min-height:40px}
 .checkbox-group input[type="checkbox"]{width:17px;height:17px;accent-color:var(--brand);cursor:pointer;flex-shrink:0}
-
 .badge{display:inline-block;padding:3px 10px;border-radius:var(--r-full);font-size:11px;font-weight:700}
 .badge.blue{background:var(--brand-light);color:var(--brand-dark)}
 .badge.green{background:var(--present-bg);color:var(--present-dark)}
@@ -142,19 +110,16 @@ img{max-width:100%;height:auto;display:block}
 .badge.gray{background:var(--line-2);color:var(--ink-3)}
 .badge.purple{background:#f3e8ff;color:#6b21a8}
 [data-theme="dark"] .badge.purple{background:#3b0764;color:#e9d5ff}
-
 .search-box{position:relative;flex:1;min-width:220px;max-width:420px}
 .search-box input{width:100%;padding:10px 13px 10px 40px;border:1.5px solid var(--line);border-radius:var(--r-md);font-size:13.5px;font-family:inherit;background:var(--paper);color:var(--ink)}
 .search-box input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
 .search-box::before{content:"🔍";position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;opacity:.6}
-
 .action-btns{display:flex;gap:6px;flex-wrap:wrap}
 .icon-btn{width:38px;height:38px;border-radius:var(--r-sm);border:none;cursor:pointer;font-size:14px;display:grid;place-items:center;transition:all .15s;flex-shrink:0}
 .icon-btn.view{background:#ede9fe;color:#6d28d9}
 .icon-btn.edit{background:var(--brand-light);color:var(--brand)}
 .icon-btn.del{background:var(--absent-bg);color:var(--absent)}
 .icon-btn:hover{transform:translateY(-1px)}
-
 .sticky-table-wrap{position:relative;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;border:1px solid var(--line);border-radius:var(--r-md);background:var(--paper);max-height:calc(100vh - 260px)}
 .sticky-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13.5px;table-layout:auto}
 .sticky-table th,.sticky-table td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--paper);vertical-align:middle;color:var(--ink)}
@@ -164,7 +129,6 @@ img{max-width:100%;height:auto;display:block}
 .sticky-table tbody tr:nth-child(even) .col-stick-1,.sticky-table tbody tr:nth-child(even) .col-stick-2,.sticky-table tbody tr:nth-child(even) .col-stick-3{background:var(--line-2)}
 .sticky-table thead .col-stick-1,.sticky-table thead .col-stick-2,.sticky-table thead .col-stick-3{z-index:15;background:var(--bg)}
 .table-info-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:var(--bg);border:1px solid var(--line);border-bottom:none;border-radius:var(--r-md) var(--r-md) 0 0;font-size:12px;color:var(--ink-3);font-weight:600;gap:10px;flex-wrap:wrap}
-
 .status-group{display:inline-flex;gap:5px}
 .status-btn{width:40px;height:40px;border-radius:var(--r-md);border:1.5px solid var(--line);background:var(--paper);font-weight:800;font-size:14px;cursor:pointer;color:var(--ink-3);display:inline-flex;align-items:center;justify-content:center;padding:0;transition:all .12s}
 .status-btn:hover{border-color:var(--brand)}
@@ -172,7 +136,6 @@ img{max-width:100%;height:auto;display:block}
 .status-btn.active[data-s="ล"]{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;border-color:transparent}
 .status-btn.active[data-s="ข"]{background:linear-gradient(135deg,#f43f5e,#dc2626);color:#fff;border-color:transparent}
 .status-btn.active[data-s="ป"]{background:linear-gradient(135deg,#fb923c,#ea580c);color:#fff;border-color:transparent}
-
 .summary-panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;margin-bottom:18px;box-shadow:var(--sh-1)}
 .summary-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
 .summary-head h3{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
@@ -203,7 +166,6 @@ img{max-width:100%;height:auto;display:block}
 .sum-card.absent .sum-value{color:var(--absent-dark)}
 .sum-card.sick .sum-value{color:var(--sick-dark)}
 .sum-sub{font-size:11px;color:var(--ink-3);font-weight:500;margin-top:1px}
-
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px}
 .kpi{background:var(--paper);border-radius:var(--r-lg);padding:20px;border:1px solid var(--line);position:relative;overflow:hidden;box-shadow:var(--sh-1)}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--brand),#7c3aed)}
@@ -221,14 +183,7 @@ img{max-width:100%;height:auto;display:block}
 .chart-canvas-wrap.tall{height:400px;min-height:400px}
 .chart-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ink-3);font-size:13px;gap:8px;pointer-events:none}
 .chart-empty-icon{font-size:44px;opacity:.4}
-
-/* ⭐ NEW: Purple Leaderboard */
-.leaderboard-card{
-  background:linear-gradient(135deg,#6d28d9 0%,#4c1d95 50%,#3b0764 100%);
-  border-radius:20px;overflow:hidden;margin-bottom:20px;
-  box-shadow:0 20px 50px -12px rgba(109,40,217,.45);
-  border:1px solid rgba(251,191,36,.35);
-}
+.leaderboard-card{background:linear-gradient(135deg,#6d28d9 0%,#4c1d95 50%,#3b0764 100%);border-radius:20px;overflow:hidden;margin-bottom:20px;box-shadow:0 20px 50px -12px rgba(109,40,217,.45);border:1px solid rgba(251,191,36,.35)}
 .leaderboard-header{padding:20px 22px;text-align:center;border-bottom:2px solid rgba(251,191,36,.3);background:rgba(255,255,255,.03)}
 .leaderboard-title{font-size:22px;font-weight:800;color:#fbbf24;letter-spacing:.5px;text-shadow:0 2px 10px rgba(251,191,36,.5)}
 .leaderboard-sub{font-size:12px;color:rgba(255,255,255,.75);margin-top:6px;font-weight:500}
@@ -247,22 +202,14 @@ img{max-width:100%;height:auto;display:block}
 .lb-name{font-weight:700;color:#fff;font-size:15px;letter-spacing:-.1px}
 .lb-name .lb-sub{display:block;font-size:11.5px;color:rgba(255,255,255,.55);font-weight:500;margin-top:2px}
 .lb-num{font-weight:800;color:#fbbf24;text-align:center;font-size:15px;font-family:'Sarabun',monospace}
-.lb-num.zero{color:rgba(255,255,255,.3)}
 .lb-pct{font-weight:800;text-align:center;font-size:16px;color:#fff;font-family:'Sarabun',monospace}
-.lb-pct.good{color:#6ee7b7}
-.lb-pct.warn{color:#fcd34d}
-.lb-pct.bad{color:#fda4af}
+.lb-pct.good{color:#6ee7b7}.lb-pct.warn{color:#fcd34d}.lb-pct.bad{color:#fda4af}
 .lb-total{display:inline-flex;align-items:center;justify-content:center;min-width:46px;height:34px;padding:0 12px;background:rgba(251,191,36,.18);border:1px solid rgba(251,191,36,.4);border-radius:10px;font-size:15px;font-weight:800;color:#fbbf24;font-family:'Sarabun',monospace}
 .lb-badge{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 10px;background:rgba(255,255,255,.08);border-radius:10px;font-size:14px;font-weight:800;color:#fbbf24;font-family:'Sarabun',monospace}
 .lb-badge.zero{color:rgba(255,255,255,.3)}
-.lb-empty{padding:50px 20px;text-align:center;color:rgba(255,255,255,.6)}
-
-/* ⭐ NEW: Mobile Report Cards */
 .report-mobile-cards{display:none;flex-direction:column;gap:10px;padding:12px}
 .report-mc{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--sh-1);border-left:4px solid var(--brand)}
-.report-mc.good{border-left-color:var(--present)}
-.report-mc.warn{border-left-color:var(--leave)}
-.report-mc.bad{border-left-color:var(--absent)}
+.report-mc.good{border-left-color:var(--present)}.report-mc.warn{border-left-color:var(--leave)}.report-mc.bad{border-left-color:var(--absent)}
 .report-mc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;flex-wrap:wrap}
 .report-mc-date{font-size:15px;font-weight:800;color:var(--ink)}
 .report-mc-wd{font-size:11px;color:var(--ink-3);font-weight:600;padding:2px 8px;background:var(--line-2);border-radius:6px;margin-left:6px}
@@ -274,16 +221,11 @@ img{max-width:100%;height:auto;display:block}
 .report-mc-stat{text-align:center;padding:8px 4px;border-radius:8px;background:var(--bg)}
 .report-mc-stat .lbl{font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.4px}
 .report-mc-stat .val{font-size:17px;font-weight:800;margin-top:2px;line-height:1.1}
-.report-mc-stat.present{background:var(--present-bg)}
-.report-mc-stat.present .val{color:var(--present-dark)}
-.report-mc-stat.leave{background:var(--leave-bg)}
-.report-mc-stat.leave .val{color:var(--leave-dark)}
-.report-mc-stat.absent{background:var(--absent-bg)}
-.report-mc-stat.absent .val{color:var(--absent-dark)}
-.report-mc-stat.sick{background:var(--sick-bg)}
-.report-mc-stat.sick .val{color:var(--sick-dark)}
+.report-mc-stat.present{background:var(--present-bg)}.report-mc-stat.present .val{color:var(--present-dark)}
+.report-mc-stat.leave{background:var(--leave-bg)}.report-mc-stat.leave .val{color:var(--leave-dark)}
+.report-mc-stat.absent{background:var(--absent-bg)}.report-mc-stat.absent .val{color:var(--absent-dark)}
+.report-mc-stat.sick{background:var(--sick-bg)}.report-mc-stat.sick .val{color:var(--sick-dark)}
 .report-mc-notes{margin-top:10px;font-size:12px;padding:8px 10px;background:var(--bg);border-radius:8px;color:var(--ink-2);line-height:1.5}
-
 .report-control{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;margin-bottom:18px;box-shadow:var(--sh-1)}
 .report-control-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 .report-field{display:flex;flex-direction:column;gap:6px}
@@ -303,7 +245,6 @@ img{max-width:100%;height:auto;display:block}
 .report-empty .icon{font-size:44px;margin-bottom:8px;opacity:.5}
 .report-empty h3{color:var(--ink);font-size:15px;margin-bottom:6px}
 .report-empty p{font-size:12.5px}
-
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;z-index:1000;padding:24px;overflow-y:auto}
 .modal-overlay.show{display:flex}
 .modal{background:var(--paper);border-radius:var(--r-lg);max-width:900px;width:100%;max-height:92vh;overflow:auto;box-shadow:var(--sh-4)}
@@ -313,12 +254,10 @@ img{max-width:100%;height:auto;display:block}
 .modal-close{background:var(--line-2);border:none;width:38px;height:38px;border-radius:var(--r-md);font-size:20px;cursor:pointer;color:var(--ink-3);display:grid;place-items:center;flex-shrink:0}
 .modal-body{padding:22px 24px}
 .modal-footer{display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;border-top:1px solid var(--line);background:var(--bg);position:sticky;bottom:0}
-
 .photo-upload{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px;border:2px dashed var(--line);border-radius:var(--r-md);background:var(--bg)}
 .photo-upload .placeholder{width:120px;height:120px;border-radius:50%;background:var(--line-2);display:grid;place-items:center;font-size:40px;color:var(--ink-4);overflow:hidden}
 .photo-upload label{cursor:pointer;font-size:12.5px;color:var(--brand);font-weight:700}
 .photo-upload input[type="file"]{display:none}
-
 .info-banner{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #fcd34d;border-radius:var(--r-md);padding:12px 16px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px;font-size:13px;font-weight:600;color:#78350f}
 [data-theme="dark"] .info-banner{background:linear-gradient(135deg,#422006,#78350f);color:#fde68a;border-color:#b45309}
 .info-banner .icon{font-size:20px;flex-shrink:0}
@@ -328,7 +267,6 @@ img{max-width:100%;height:auto;display:block}
 [data-theme="dark"] .info-banner.info{background:linear-gradient(135deg,#1e1b4b,#312e81);color:#c7d2fe;border-color:#4f46e5}
 .info-banner.purple{background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-color:#c4b5fd;color:#5b21b6}
 [data-theme="dark"] .info-banner.purple{background:linear-gradient(135deg,#2e1065,#4c1d95);color:#ddd6fe;border-color:#6d28d9}
-
 .profile-header{display:flex;gap:20px;align-items:center;padding:20px;background:linear-gradient(135deg,#f5f7ff,#faf5ff);border-radius:var(--r-md);margin-bottom:20px}
 [data-theme="dark"] .profile-header{background:linear-gradient(135deg,#1e1b4b,#312e81)}
 .profile-avatar{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--brand),#7c3aed);color:#fff;display:grid;place-items:center;font-size:32px;font-weight:800;flex-shrink:0;overflow:hidden;border:3px solid var(--paper);box-shadow:var(--sh-2)}
@@ -340,22 +278,12 @@ img{max-width:100%;height:auto;display:block}
 .info-label{font-size:11px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
 .info-value{font-size:13.5px;font-weight:600;color:var(--ink);word-break:break-word}
 .info-value.empty{color:var(--ink-4);font-style:italic;font-weight:500}
-.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px}
-.stat-mini{padding:14px 10px;border-radius:var(--r-md);text-align:center;border:1.5px solid var(--line);background:var(--paper)}
-.stat-mini .label{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink-3);letter-spacing:.4px}
-.stat-mini .value{font-size:24px;font-weight:800;margin-top:2px;line-height:1.2}
-.stat-mini.present{background:var(--present-bg)}.stat-mini.present .value{color:var(--present-dark)}
-.stat-mini.leave{background:var(--leave-bg)}.stat-mini.leave .value{color:var(--leave-dark)}
-.stat-mini.absent{background:var(--absent-bg)}.stat-mini.absent .value{color:var(--absent-dark)}
-.stat-mini.sick{background:var(--sick-bg)}.stat-mini.sick .value{color:var(--sick-dark)}
-
 .att-status{display:inline-block;width:28px;height:28px;border-radius:var(--r-sm);font-weight:800;text-align:center;line-height:28px;font-size:12.5px}
 .att-status[data-s="/"]{background:var(--present-bg);color:var(--present-dark)}
 .att-status[data-s="ล"]{background:var(--leave-bg);color:var(--leave-dark)}
 .att-status[data-s="ข"]{background:var(--absent-bg);color:var(--absent-dark)}
 .att-status[data-s="ป"]{background:var(--sick-bg);color:var(--sick-dark)}
 .att-status[data-s=""]{background:var(--line-2);color:var(--ink-4)}
-
 .user-grid,.teacher-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
 .user-card,.teacher-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);padding:14px;display:flex;gap:14px;align-items:center;transition:all .2s}
 .user-card:hover,.teacher-card:hover{box-shadow:var(--sh-3);transform:translateY(-2px)}
@@ -369,7 +297,6 @@ img{max-width:100%;height:auto;display:block}
 .user-role-badge.director{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
 .user-role-badge.deputy_director{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff}
 .user-role-badge.teacher{background:var(--line-2);color:var(--ink-3)}
-
 .del-req-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);padding:16px;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start}
 .del-req-card.pending{border-left:4px solid var(--leave)}
 .del-req-card.approved{border-left:4px solid var(--present);opacity:.9}
@@ -378,7 +305,6 @@ img{max-width:100%;height:auto;display:block}
 .del-req-card .content{flex:1;min-width:0}
 .del-req-card .title{font-size:14px;font-weight:700;margin-bottom:4px}
 .del-req-card .meta{font-size:12px;color:var(--ink-3);margin-bottom:8px;display:flex;gap:12px;flex-wrap:wrap}
-
 .academic-timeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px}
 .timeline-card{background:var(--paper);border:2px solid var(--line);border-radius:var(--r-md);padding:18px}
 .timeline-card.active{border-color:var(--present)}
@@ -398,7 +324,6 @@ img{max-width:100%;height:auto;display:block}
 .promo-class-card .from{font-size:11.5px;color:var(--ink-3);font-weight:600}
 .promo-class-card .count{font-size:20px;font-weight:800;color:var(--brand);margin:4px 0}
 .promo-class-card .to{font-size:12.5px;font-weight:700;color:var(--present-dark)}
-
 .archive-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
 .archive-year-card{background:var(--paper);border:2px solid var(--line);border-radius:var(--r-md);padding:16px;transition:all .2s}
 .archive-year-card:hover{border-color:var(--brand);box-shadow:var(--sh-3)}
@@ -406,7 +331,6 @@ img{max-width:100%;height:auto;display:block}
 .archive-year-card .year-title{font-size:17px;font-weight:800;color:var(--brand)}
 .archive-year-card .file-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--r-sm);background:var(--bg);border:1px solid var(--line);font-size:12.5px;margin-bottom:8px}
 .archive-year-card .file-item a{color:var(--brand);font-weight:700;text-decoration:none;font-size:11.5px;padding:7px 12px;border-radius:var(--r-sm);background:var(--brand-light);flex-shrink:0}
-
 .delete-warning{background:linear-gradient(135deg,#ffe4e6,#fecdd3);border:1px solid #fda4af;border-radius:var(--r-md);padding:12px 16px;margin-bottom:14px;color:#9f1239;font-weight:600;font-size:13px;display:flex;gap:10px;align-items:flex-start}
 [data-theme="dark"] .delete-warning{background:linear-gradient(135deg,#4c0519,#881337);color:#fecdd3;border-color:#be123c}
 .delete-student-info{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:14px;margin-bottom:14px;display:flex;gap:14px;align-items:center}
@@ -420,7 +344,6 @@ img{max-width:100%;height:auto;display:block}
 .delete-hold-btn{position:relative;overflow:hidden;background:linear-gradient(135deg,#f43f5e,#dc2626);color:#fff;padding:14px 24px;border-radius:var(--r-md);border:none;font-weight:700;font-size:14px;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:8px;width:100%;justify-content:center;user-select:none;-webkit-user-select:none;margin-top:12px;min-height:52px;touch-action:none}
 .delete-hold-btn .hold-progress{position:absolute;top:0;left:0;height:100%;width:0;background:rgba(0,0,0,.3);pointer-events:none}
 .delete-hold-btn .hold-label{position:relative;z-index:1;pointer-events:none}
-
 .toast{position:fixed;bottom:24px;right:24px;left:auto;background:#0f172a;color:#fff;padding:14px 20px;border-radius:var(--r-md);box-shadow:var(--sh-4);font-size:13.5px;font-weight:600;transform:translateY(120px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:9999;max-width:420px;pointer-events:none}
 .toast.show{transform:translateY(0);opacity:1}
 .toast.success{background:linear-gradient(135deg,#10b981,#059669)}
@@ -432,7 +355,6 @@ img{max-width:100%;height:auto;display:block}
 .empty-state{padding:50px 20px;text-align:center;color:var(--ink-3)}
 .empty-state-icon{font-size:60px;margin-bottom:10px;opacity:.35}
 .empty-state h3{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px}
-
 .auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#2563eb 100%)}
 .auth-page::before,.auth-page::after{content:'';position:absolute;border-radius:50%;pointer-events:none}
 .auth-page::before{top:-15%;left:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(255,255,255,.15),transparent 70%)}
@@ -455,15 +377,12 @@ img{max-width:100%;height:auto;display:block}
 .auth-class-box{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:var(--r-md);margin-top:6px}
 .auth-class-box label{display:flex;align-items:center;gap:6px;padding:7px;border-radius:var(--r-sm);cursor:pointer;font-size:12px;font-weight:600;min-height:38px;color:#334155}
 .auth-class-box input[type="checkbox"]{width:15px;height:15px;accent-color:var(--brand);cursor:pointer;flex-shrink:0}
-
 .print-only,.print-header,.print-signature{display:none}
 .print-header img.logo{max-height:60px;margin-bottom:4px}
-
-/* ⭐ Print: 1 เดือน = 1 หน้า */
 @media print{
   @page{size:A4;margin:6mm 8mm}
   html,body{background:#fff!important;font-size:10px;color:#000!important}
-  .topbar,.modal-close,.modal-footer,.sync-badge,.auth-page,.report-control,.report-term-info,.user-chip,.summary-panel .summary-bar,.theme-toggle,.back-btn,.no-print,.btn,.menu-grid,.kpi-grid .kpi::before{display:none!important}
+  .topbar,.modal-close,.modal-footer,.sync-badge,.auth-page,.report-control,.report-term-info,.user-chip,.summary-panel .summary-bar,.theme-toggle,.back-btn,.no-print,.btn,.menu-grid{display:none!important}
   .page-content{max-width:none;padding:0}
   .card{box-shadow:none;border:0;margin-bottom:0;padding:0;background:#fff!important}
   .page-head{display:none}
@@ -494,11 +413,7 @@ img{max-width:100%;height:auto;display:block}
   .lb-table th{background:#e5e7eb!important;color:#000!important;border-bottom:1px solid #000!important;padding:4px 6px!important;font-size:8.5px!important}
   .lb-table td{color:#000!important;border-bottom:1px solid #000!important;padding:4px 6px!important}
   .lb-num,.lb-pct,.lb-total,.lb-badge,.lb-rank{color:#000!important;background:#f3e8ff!important;border-color:#000!important}
-  .page-break{page-break-after:always}
-  .report-month-section{page-break-inside:avoid;page-break-after:always}
-  .report-month-section:last-child{page-break-after:auto}
 }
-
 @media(max-width:768px){
   .page-content{padding:14px 12px 60px}
   .page-title{font-size:20px}
@@ -522,11 +437,7 @@ img{max-width:100%;height:auto;display:block}
   .report-range-arrow{transform:rotate(90deg);font-size:22px;padding:0;margin:-4px 0}
   .report-actions{grid-template-columns:1fr;gap:8px}
   .form-grid,.form-grid.cols-3,.form-grid.cols-4{grid-template-columns:1fr;gap:12px}
-  .form-group input,.form-group select,.form-group textarea,
-  .filter-bar input,.filter-bar select,
-  .report-field input,.report-field select,
-  .report-range-inputs input,.report-range-inputs select,
-  .search-box input{font-size:16px!important;min-height:46px}
+  .form-group input,.form-group select,.form-group textarea,.filter-bar input,.filter-bar select,.report-field input,.report-field select,.report-range-inputs input,.report-range-inputs select,.search-box input{font-size:16px!important;min-height:46px}
   .checkbox-group{grid-template-columns:repeat(2,1fr);padding:10px}
   .btn{padding:11px 16px;font-size:13.5px;min-height:44px}
   .status-btn{width:36px;height:36px;font-size:13px}
@@ -543,7 +454,6 @@ img{max-width:100%;height:auto;display:block}
   .sticky-table th,.sticky-table td{padding:9px 10px}
   .sticky-table .hide-mobile{display:none!important}
   .table-info-bar{margin:0 -12px;border-radius:0}
-  /* ⭐ Mobile: Reports */
   .report-desktop-table{display:none!important}
   .report-mobile-cards{display:flex!important}
   .leaderboard-header{padding:14px 12px}
@@ -569,8 +479,7 @@ img{max-width:100%;height:auto;display:block}
   .sync-badge{padding:6px}
 }
 @media(max-width:1023px){
-  input:not([type="checkbox"]):not([type="radio"]),
-  select,textarea{font-size:16px!important}
+  input:not([type="checkbox"]):not([type="radio"]),select,textarea{font-size:16px!important}
 }
 @media(max-width:400px){
   .summary-cards{grid-template-columns:1fr}
@@ -1171,7 +1080,7 @@ const MENU_ITEMS=[
 
 /* ============ CACHE ============ */
 const _inFlight={};const _memCache={};
-const CACHE_TTL={settings:1800000,termDates:1800000,students:120000,teachers:600000,dashboard:120000};
+const CACHE_TTL={settings:1800000,termDates:1800000,students:120000,teachers:600000,dashboard:60000};
 async function cachedCall(key,fn,ttl){
   const now=Date.now();const c=_memCache[key];
   if(c&&(now-c.ts)<(ttl||CACHE_TTL[key]||60000))return c.data;
@@ -1189,8 +1098,11 @@ const API={
     const url=`${API_URL}?${qs}`;
     const o={method:m,redirect:'follow',cache:'no-store'};
     if(b){o.method='POST';o.headers={'Content-Type':'text/plain;charset=utf-8'};o.body=JSON.stringify(b);}
-    const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),15000);o.signal=ctrl.signal;
-    let r;try{r=await fetch(url,o);}finally{clearTimeout(timer);}
+    const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),90000);o.signal=ctrl.signal;
+    let r;
+    try{r=await fetch(url,o);}
+    catch(err){clearTimeout(timer);if(err.name==='AbortError')throw new Error('หมดเวลาเชื่อมต่อ (90 วินาที)');throw new Error('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: '+err.message);}
+    finally{clearTimeout(timer);}
     const t=await r.text();let j;try{j=JSON.parse(t);}catch(e){throw new Error('Response ไม่ถูกต้อง: '+t.slice(0,200));}
     if(j.error)throw new Error(j.error);return j;
   },
@@ -1204,7 +1116,7 @@ const API={
   getSettings(){return this.call('getSettings');},setSetting(k,v){return this.call('setSetting',{},'POST',{key:k,value:v});},
   getAcademicYearInfo(){return this.call('getAcademicYearInfo');},setTermDates(d){return this.call('setTermDates',{},'POST',d);},startNewAcademicYear(d){return this.call('startNewAcademicYear',{},'POST',d||{});},getArchiveHistory(){return this.call('getArchiveHistory');},previewPromotion(){return this.call('previewPromotion');},listArchivedYears(){return this.call('listArchivedYears');},listArchiveFolderContents(){return this.call('listArchiveFolderContents');},
   getAttendance(d,c){return this.call('getAttendance',{date:d,class:c||''});},saveAttendance(p){return this.call('saveAttendance',{},'POST',p);},
-  getDashboard(d,r){return this.call('getDashboard',{date:d||'',range:r||'1month'});},
+  getDashboard(d,r){return this.call('getDashboard',{date:d||'',range:r||'30d'});},
   getStudentReport(r,f,t){return this.call('getStudentReport',{studentRow:r,fromDate:f||'',toDate:t||''});},
   getClassDailyTableWithYear(c,fm,fy,tm,ty,ay){return this.call('getClassDailyTable',{class:c||'all',fromMonth:fm,fromYear:fy,toMonth:tm,toYear:ty,academicYear:ay||'current'});},
   getHomeStats(){return this.call('getHomeStats');},getSyncVersion(){return this.call('getSyncVersion');}
@@ -1308,7 +1220,7 @@ async function tryAutoLogin(){
   try{if(exp&&new Date(exp)<new Date()){localStorage.removeItem(LS_KEY_TOKEN);localStorage.removeItem(LS_KEY_USER);localStorage.removeItem(LS_KEY_EXPIRES);sessionStorage.clear();return false;}CURRENT_TOKEN=tok;const res=await API.checkSession();if(!res.ok)return false;CURRENT_USER=res.user;return true;}catch(e){return false;}
 }
 
-/* ============ HOME MENU RENDER (⭐ NO BADGE) ============ */
+/* ============ HOME MENU RENDER ============ */
 function renderHomeMenu(){
   const grid=$('homeMenuGrid');if(!grid)return;
   const visible=MENU_ITEMS.filter(m=>!m.roles||(CURRENT_USER&&m.roles.indexOf(CURRENT_USER.role)>=0));
@@ -1354,7 +1266,7 @@ function clearDirectorSig(){_directorSigTemp='';$('directorSigPreview').innerHTM
 async function saveSettings(){
   try{const up={school_name:$('setSchoolName').value.trim(),school_address:$('setSchoolAddress').value.trim(),director_name:$('setDirectorName').value.trim()};
     if(_logoTemp!==null)up.school_logo=_logoTemp;if(_directorSigTemp!==null)up.director_signature=_directorSigTemp;
-    await Promise.all(Object.entries(up).map(([k,v])=>API.setSetting(k,v)));
+    for(const[k,v]of Object.entries(up))await API.setSetting(k,v);
     showToast('บันทึกสำเร็จ');clearCache('settings');await loadSettings();
   }catch(e){showToast('❌ '+e.message,'error');}
 }
@@ -1388,34 +1300,22 @@ async function loadHomeStats(){
   try{
     const d=new Date();
     $('heroDate').textContent=d.toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-    // ⭐ NEW: label แสดงวันที่กำกับ
     const todayFmt=formatThaiDate(todayISO());
-    $('heroPresentLabel').textContent=`มาวันนี้ (${todayFmt})`;
-    
-    const [students,home]=await Promise.all([
-      cachedCall('students',()=>API.getStudents(),CACHE_TTL.students),
-      API.getHomeStats().catch(()=>({}))
-    ]);
+    $('heroPresentLabel').textContent='มาวันนี้ ('+todayFmt+')';
+    const [students,home]=await Promise.all([cachedCall('students',()=>API.getStudents(),CACHE_TTL.students),API.getHomeStats().catch(()=>({}))]);
     $('heroStudents').textContent=students.length;
-    
-    // ⭐ NEW: Hero stats แสดงเฉพาะข้อมูลของวันนี้จริงๆ ไม่ดึงข้อมูลวันก่อนหน้ามาแทน
     try{
-      const dash=await API.getDashboard(todayISO(),'today');
+      const dash=await API.getDashboard(todayISO(),'7d');
       if(dash&&dash.totals&&dash.totals.present>0){
         $('heroPresent').textContent=dash.totals.present;
         $('heroPercent').textContent=dash.totals.percent+'%';
-      }else{
-        // ⭐ ไม่มีข้อมูลของวันนี้ → แสดง "—"
-        $('heroPresent').textContent='—';
-        $('heroPercent').textContent='—';
-      }
+      }else{$('heroPresent').textContent='—';$('heroPercent').textContent='—';}
     }catch(e){$('heroPresent').textContent='—';$('heroPercent').textContent='—';}
-    
     const el=$('heroLatest');
     if(home.latestFound){
       const iso=toISODate(home.latestDate);const[y,m,dd]=iso.split('-');
-      const yi=home.academicYear?`ปีการศึกษา ${home.academicYear}`:'';
-      const ti=home.currentTerm&&home.currentTerm.term?` · ${home.currentTerm.label}`:'';
+      const yi=home.academicYear?'ปีการศึกษา '+home.academicYear:'';
+      const ti=home.currentTerm&&home.currentTerm.term?' · '+home.currentTerm.label:'';
       el.innerHTML=`<div style="width:44px;height:44px;border-radius:var(--r-md);background:linear-gradient(135deg,var(--brand),#7c3aed);color:#fff;display:grid;place-items:center;font-size:20px;flex-shrink:0">📅</div><div style="flex:1"><b>บันทึกการมาเรียนล่าสุด:</b> วันที่ ${+dd} ${MONTHS_TH[+m]} ${+y+543}<div style="font-size:12px;color:var(--ink-3);font-weight:500;margin-top:2px">${yi}${ti}</div></div>`;
     }else{
       el.innerHTML=`<div style="width:44px;height:44px;border-radius:var(--r-md);background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;display:grid;place-items:center;font-size:20px;flex-shrink:0">⚠️</div><div style="flex:1"><b>ยังไม่มีการบันทึกการมาเรียนในภาคเรียนนี้</b></div>`;
@@ -1631,7 +1531,7 @@ async function loadDeleteRequests(){
   try{const list=await API.getDeleteRequests();const f=$('filterDelStatus').value;let fl=f?list.filter(r=>r.status===f):list;
     if(!fl.length){c.innerHTML=`<div class="card"><div class="empty-state"><div class="empty-state-icon">📋</div><h3>ไม่มีคำขอในสถานะนี้</h3></div></div>`;return;}
     c.innerHTML=fl.map(r=>{const sm={pending:'รออนุมัติ',approved:'อนุมัติแล้ว',rejected:'ปฏิเสธ',cancelled:'ยกเลิก',failed:'ล้มเหลว'};const im={pending:'⏳',approved:'✅',rejected:'❌',cancelled:'🚫',failed:'⚠️'};const bm={pending:'yellow',approved:'green',rejected:'red',cancelled:'gray',failed:'red'};const isP=r.status==='pending',ca=isP&&isApprover(),cc=isP&&(r.requestedBy===CURRENT_USER.username||isAdmin());
-      return `<div class="del-req-card ${r.status}"><div class="icon-wrap">${im[r.status]||'📋'}</div><div class="content"><div class="title">${escapeHtml(r.targetName)} <span class="badge ${bm[r.status]}">${sm[r.status]}</span></div><div class="meta"><span>🏫 ${CLASS_LABELS[r.targetClass]||r.targetClass||'ไม่ระบุ'}</span><span>🕐 ${formatTimestamp(r.timestamp)}</span><span>👤 ${escapeHtml(r.requesterName)}</span></div><div style="font-size:12px;color:var(--ink-3)">ครูประจำชั้น: <b>${escapeHtml(r.teacherName)}</b>${r.approvedBy?` · อนุมัติโดย: <b>${escapeHtml(r.approvedBy)}</b>`:''}</div>${r.note?`<div style="font-size:12px;padding:8px 12px;background:var(--bg);border-radius:var(--r-sm);margin-top:8px">💬 ${escapeHtml(r.note)}</div>`:''}</div><div class="actions" style="display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap">${ca?`<button class="btn btn-success btn-sm" onclick="approveDeleteReq(${r.id})">✅ อนุมัติ</button><button class="btn btn-danger btn-sm" onclick="rejectDeleteReq(${r.id})">❌ ปฏิเสธ</button>`:''}${cc?`<button class="btn btn-ghost btn-sm" onclick="cancelDeleteReq(${r.id})">🚫 ยกเลิก</button>`:''}</div></div>`;
+      return `<div class="del-req-card ${r.status}"><div class="icon-wrap">${im[r.status]||'📋'}</div><div class="content"><div class="title">${escapeHtml(r.targetName)} <span class="badge ${bm[r.status]}">${sm[r.status]}</span></div><div class="meta"><span>🏫 ${CLASS_LABELS[r.targetClass]||r.targetClass||'ไม่ระบุ'}</span><span>🕐 ${formatTimestamp(r.timestamp)}</span><span>👤 ${escapeHtml(r.requesterName)}</span></div><div style="font-size:12px;color:var(--ink-3)">ครูประจำชั้น: <b>${escapeHtml(r.teacherName)}</b>${r.approvedBy?' · อนุมัติโดย: <b>'+escapeHtml(r.approvedBy)+'</b>':''}</div>${r.note?`<div style="font-size:12px;padding:8px 12px;background:var(--bg);border-radius:var(--r-sm);margin-top:8px">💬 ${escapeHtml(r.note)}</div>`:''}</div><div class="actions" style="display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap">${ca?`<button class="btn btn-success btn-sm" onclick="approveDeleteReq(${r.id})">✅ อนุมัติ</button><button class="btn btn-danger btn-sm" onclick="rejectDeleteReq(${r.id})">❌ ปฏิเสธ</button>`:''}${cc?`<button class="btn btn-ghost btn-sm" onclick="cancelDeleteReq(${r.id})">🚫 ยกเลิก</button>`:''}</div></div>`;
     }).join('');
   }catch(e){c.innerHTML=`<div class="card" style="color:var(--absent);padding:40px">⚠️ ${escapeHtml(e.message)}</div>`;}
 }
@@ -1815,133 +1715,163 @@ async function loadArchiveList(){
 }
 function openArchiveRootFolder(){const u=$('btnOpenRootFolder')?.dataset.url;if(u)window.open(u,'_blank');else showToast('ยังไม่มีโฟลเดอร์ Archive','info');}
 
-/* ============ DASHBOARD ============ */
+/* ============ DASHBOARD (⭐ FIXED: filter by scope) ============ */
 let charts={};
 let lastDashboardData=null;
 
-// ⭐ NEW: คำนวณช่วงวันที่จาก frame
 function getDateRangeForFrame(frame){
   const today=new Date();today.setHours(0,0,0,0);
-  const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  const subtract=(d,days)=>{const x=new Date(d);x.setDate(x.getDate()-days);return x;};
-  const subtractMonth=(d,m)=>{const x=new Date(d);x.setMonth(x.getMonth()-m);return x;};
-  
+  const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const sub=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()-n);return x;};
+  const subM=(d,m)=>{const x=new Date(d);x.setMonth(x.getMonth()-m);return x;};
   switch(frame){
     case 'today': return {from:iso(today),to:iso(today),daily:true,label:'วันนี้ ('+formatThaiDate(iso(today))+')'};
-    case 'yesterday': {const y=subtract(today,1);return {from:iso(y),to:iso(y),daily:true,label:'เมื่อวาน ('+formatThaiDate(iso(y))+')'};}
-    case '3days': {const t=subtract(today,3);return {from:iso(t),to:iso(today),daily:true,label:'3 วันล่าสุด ('+formatThaiDate(iso(t))+' - '+formatThaiDate(iso(today))+')'};}
-    case '1week': {const t=subtract(today,7);return {from:iso(t),to:iso(today),daily:false,label:'1 สัปดาห์ล่าสุด'};}
-    case '1month': {const t=subtractMonth(today,1);return {from:iso(t),to:iso(today),daily:false,label:'1 เดือนล่าสุด'};}
-    case '3months': {const t=subtractMonth(today,3);return {from:iso(t),to:iso(today),daily:false,label:'3 เดือนล่าสุด'};}
-    case 'thisTerm': {
+    case 'yesterday':{const y=sub(today,1);return {from:iso(y),to:iso(y),daily:true,label:'เมื่อวาน ('+formatThaiDate(iso(y))+')'};}
+    case '3days':{const t=sub(today,3);return {from:iso(t),to:iso(today),daily:true,label:'3 วันล่าสุด ('+formatThaiDate(iso(t))+' - '+formatThaiDate(iso(today))+')'};}
+    case '1week':{const t=sub(today,7);return {from:iso(t),to:iso(today),daily:false,label:'1 สัปดาห์ล่าสุด'};}
+    case '1month':{const t=subM(today,1);return {from:iso(t),to:iso(today),daily:false,label:'1 เดือนล่าสุด'};}
+    case '3months':{const t=subM(today,3);return {from:iso(t),to:iso(today),daily:false,label:'3 เดือนล่าสุด'};}
+    case 'thisTerm':{
       const inT1=TERM_DATES.term1Start&&todayISO()>=TERM_DATES.term1Start&&(!TERM_DATES.term1End||todayISO()<=TERM_DATES.term1End);
       const inT2=TERM_DATES.term2Start&&todayISO()>=TERM_DATES.term2Start&&(!TERM_DATES.term2End||todayISO()<=TERM_DATES.term2End);
-      if(inT1) return {from:TERM_DATES.term1Start,to:iso(today),daily:false,label:'ภาคเรียนที่ 1 ปี '+CURRENT_YEAR};
-      if(inT2) return {from:TERM_DATES.term2Start,to:iso(today),daily:false,label:'ภาคเรียนที่ 2 ปี '+CURRENT_YEAR};
-      return {from:iso(subtractMonth(today,6)),to:iso(today),daily:false,label:'ภาคเรียนนี้'};
+      if(inT1)return {from:TERM_DATES.term1Start,to:iso(today),daily:false,label:'ภาคเรียนที่ 1 ปี '+CURRENT_YEAR};
+      if(inT2)return {from:TERM_DATES.term2Start,to:iso(today),daily:false,label:'ภาคเรียนที่ 2 ปี '+CURRENT_YEAR};
+      return {from:iso(subM(today,6)),to:iso(today),daily:false,label:'ภาคเรียนนี้'};
     }
-    case 'lastTerm': {
-      if(TERM_DATES.term2Start&&TERM_DATES.term2End){return {from:TERM_DATES.term2Start,to:TERM_DATES.term2End,daily:false,label:'ภาคเรียนที่ 2 ปี '+(CURRENT_YEAR-1)};}
-      if(TERM_DATES.term1Start&&TERM_DATES.term1End){return {from:TERM_DATES.term1Start,to:TERM_DATES.term1End,daily:false,label:'ภาคเรียนที่ 1 ปี '+(CURRENT_YEAR-1)};}
-      return {from:iso(subtractMonth(today,12)),to:iso(subtractMonth(today,6)),daily:false,label:'ภาคเรียนที่แล้ว'};
+    case 'lastTerm':{
+      if(TERM_DATES.term2Start&&TERM_DATES.term2End)return {from:TERM_DATES.term2Start,to:TERM_DATES.term2End,daily:false,label:'ภาคเรียนที่ 2 ปี '+(CURRENT_YEAR-1)};
+      if(TERM_DATES.term1Start&&TERM_DATES.term1End)return {from:TERM_DATES.term1Start,to:TERM_DATES.term1End,daily:false,label:'ภาคเรียนที่ 1 ปี '+(CURRENT_YEAR-1)};
+      return {from:iso(subM(today,12)),to:iso(subM(today,6)),daily:false,label:'ภาคเรียนที่แล้ว'};
     }
-    case 'thisYear': {const t=new Date(today.getFullYear(),0,1);return {from:iso(t),to:iso(today),daily:false,label:'ปีการศึกษานี้ ('+CURRENT_YEAR+')'};}
-    case 'lastYear': {const y=today.getFullYear()-1;return {from:`${y}-01-01`,to:`${y}-12-31`,daily:false,label:'ปีการศึกษาที่แล้ว ('+(CURRENT_YEAR-1)+')'};}
-    case '3years': {const y=today.getFullYear()-3;return {from:`${y}-01-01`,to:`${y}-12-31`,daily:false,label:'3 ปีที่แล้ว ('+(CURRENT_YEAR-3)+')'};}
-    case '5years': {const y=today.getFullYear()-5;return {from:`${y}-01-01`,to:`${y}-12-31`,daily:false,label:'5 ปีที่แล้ว ('+(CURRENT_YEAR-5)+')'};}
-    default: {const t=subtractMonth(today,1);return {from:iso(t),to:iso(today),daily:false,label:'1 เดือนล่าสุด'};}
+    case 'thisYear':{const t=new Date(today.getFullYear(),0,1);return {from:iso(t),to:iso(today),daily:false,label:'ปีการศึกษานี้ ('+CURRENT_YEAR+')'};}
+    case 'lastYear':{const y=today.getFullYear()-1;return {from:y+'-01-01',to:y+'-12-31',daily:false,label:'ปีการศึกษาที่แล้ว ('+(CURRENT_YEAR-1)+')'};}
+    case '3years':{const y=today.getFullYear()-3;return {from:y+'-01-01',to:y+'-12-31',daily:false,label:'3 ปีที่แล้ว ('+(CURRENT_YEAR-3)+')'};}
+    case '5years':{const y=today.getFullYear()-5;return {from:y+'-01-01',to:y+'-12-31',daily:false,label:'5 ปีที่แล้ว ('+(CURRENT_YEAR-5)+')'};}
+    default:{const t=subM(today,1);return {from:iso(t),to:iso(today),daily:false,label:'1 เดือนล่าสุด'};}
   }
 }
 
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
-function showChartEmpty(id,msg){const c=$(id);if(!c)return;c.style.display='none';const p=c.parentElement;const o=p.querySelector('.chart-empty');if(o)o.remove();const d=document.createElement('div');d.className='chart-empty';d.innerHTML=`<div class="chart-empty-icon">📊</div><div>${escapeHtml(msg)}</div>`;p.appendChild(d);}
+function showChartEmpty(id,msg){const c=$(id);if(!c)return;c.style.display='none';const p=c.parentElement;const o=p.querySelector('.chart-empty');if(o)o.remove();const d=document.createElement('div');d.className='chart-empty';d.innerHTML='<div class="chart-empty-icon">📊</div><div>'+escapeHtml(msg)+'</div>';p.appendChild(d);}
 function clearChartEmpty(id){const c=$(id);if(!c)return;c.style.display='';const o=c.parentElement.querySelector('.chart-empty');if(o)o.remove();}
 function toggleChartCard(id,show){const el=$(id);if(el)el.style.display=show?'':'none';}
 
-// ⭐ NEW: init class scope select
 function initClassScopeSelect(){
   const s=$('selClassScope');if(!s)return;
-  if(s.options.length<=1){
-    CLASSES.forEach(c=>s.add(new Option(CLASS_LABELS[c],c)));
-    s.onchange=()=>loadDashboard();
-  }
+  if(s.options.length<=1){CLASSES.forEach(c=>s.add(new Option(CLASS_LABELS[c],c)));s.onchange=()=>loadDashboard();}
   const r=$('selRange');if(r)r.onchange=()=>loadDashboard();
 }
 
+// ⭐⭐⭐ FIX: filter by scope on client-side ⭐⭐⭐
 async function loadDashboard(force){
   const frame=$('selRange')?$('selRange').value:'1month';
   const scope=$('selClassScope')?$('selClassScope').value:'all';
   const rangeInfo=getDateRangeForFrame(frame);
-  
-  // ⭐ Skeleton
+
   ['kpiPresent','kpiLeave','kpiAbsent','kpiSick'].forEach(id=>{if($(id))$(id).textContent='...';});
-  
+  ['kpiPresentPct','kpiLeaveSub','kpiAbsentSub','kpiSickSub'].forEach(id=>{if($(id))$(id).textContent='กำลังโหลด...';});
+
   try{
     if(force)clearCache('dashboard');
-    
-    // ⭐ เรียก API แบบ parallel
-    const [dashData, detailData]=await Promise.all([
-      cachedCall('dashboard_'+frame+'_'+scope,()=>API.getDashboard(todayISO(),frame),CACHE_TTL.dashboard),
-      scope!=='all'||rangeInfo.daily ? Promise.resolve(null) : API.getClassDailyTableWithYear('all',(new Date(rangeInfo.from)).getMonth()+1,(new Date(rangeInfo.from)).getFullYear()+543,(new Date(rangeInfo.to)).getMonth()+1,(new Date(rangeInfo.to)).getFullYear()+543,'current').catch(()=>null)
-    ]);
-    
-    if(!dashData||!dashData.totals)throw new Error('ไม่พบข้อมูล');
-    lastDashboardData=dashData;
-    
-    const t=dashData.totals;
-    const totalAll=(t.present||0)+(t.leave||0)+(t.absent||0)+(t.sick||0);
-    const pctPresent=totalAll?+(t.present/totalAll*100).toFixed(2):0;
-    const pctLeave=totalAll?+(t.leave/totalAll*100).toFixed(2):0;
-    const pctAbsent=totalAll?+(t.absent/totalAll*100).toFixed(2):0;
-    const pctSick=totalAll?+(t.sick/totalAll*100).toFixed(2):0;
-    
-    // ⭐ แสดงผลตาม frame: daily = แสดงจำนวนคน, อื่น ๆ = แสดงเฉพาะ %
+
+    // เลือก range ฝั่ง backend — ใช้ 90d ครอบทุกกรณี
+    let backendRange='90d';
+    if(frame==='today'||frame==='yesterday'||frame==='3days'||frame==='1week')backendRange='7d';
+    else if(frame==='1month')backendRange='30d';
+    else backendRange='90d';
+
+    const dashData=await cachedCall('dashboard_'+backendRange,
+      ()=>API.getDashboard(todayISO(),backendRange),CACHE_TTL.dashboard);
+
+    if(!dashData||!dashData.trend)throw new Error('ไม่พบข้อมูล');
+
+    // ⭐ กรอง trend ตามช่วงวันที่ + scope
+    const fromISO=rangeInfo.from, toISO=rangeInfo.to;
+    const trendFiltered=(dashData.trend||[]).filter(d=>d.date>=fromISO&&d.date<=toISO);
+
+    const totals={present:0,leave:0,absent:0,sick:0,total:0};
+    const byClass={};
+    const dailyStack=[];
+
+    trendFiltered.forEach(function(day){
+      const dayByClass=day.byClass||{};
+      if(scope==='all'){
+        let dP=0,dL=0,dA=0,dS=0;
+        Object.keys(dayByClass).forEach(function(cls){
+          const c=dayByClass[cls];if(!c)return;
+          const cp=c.present||0,cl=c.leave||0,ca=c.absent||0,cs=c.sick||0;
+          totals.present+=cp;totals.leave+=cl;totals.absent+=ca;totals.sick+=cs;
+          dP+=cp;dL+=cl;dA+=ca;dS+=cs;
+          if(!byClass[cls])byClass[cls]={present:0,leave:0,absent:0,sick:0,total:0};
+          byClass[cls].present+=cp;byClass[cls].leave+=cl;
+          byClass[cls].absent+=ca;byClass[cls].sick+=cs;
+          byClass[cls].total+=(c.total||(cp+cl+ca+cs));
+        });
+        if(dP+dL+dA+dS>0)dailyStack.push({date:day.date,present:dP,leave:dL,absent:dA,sick:dS});
+      }else{
+        const c=dayByClass[scope];if(!c||!c.total)return;
+        const cp=c.present||0,cl=c.leave||0,ca=c.absent||0,cs=c.sick||0;
+        totals.present+=cp;totals.leave+=cl;totals.absent+=ca;totals.sick+=cs;
+        totals.total+=(c.total||(cp+cl+ca+cs));
+        dailyStack.push({date:day.date,present:cp,leave:cl,absent:ca,sick:cs});
+      }
+    });
+
+    if(scope==='all')totals.total=totals.present+totals.leave+totals.absent+totals.sick;
+    const pct=t=>totals.total?+(t/totals.total*100).toFixed(2):0;
+    const pctPresent=pct(totals.present),pctLeave=pct(totals.leave);
+    const pctAbsent=pct(totals.absent),pctSick=pct(totals.sick);
+
+    Object.keys(byClass).forEach(function(c){
+      byClass[c].percent=byClass[c].total?+(byClass[c].present/byClass[c].total*100).toFixed(2):0;
+    });
+
+    // KPI แสดงผล
     if(rangeInfo.daily){
-      $('kpiPresent').textContent=Number(t.present||0).toLocaleString();
+      $('kpiPresent').textContent=Number(totals.present).toLocaleString();
       $('kpiPresentPct').textContent=pctPresent+'% ของทั้งหมด';
-      $('kpiLeave').textContent=Number(t.leave||0).toLocaleString();
+      $('kpiLeave').textContent=Number(totals.leave).toLocaleString();
       $('kpiLeaveSub').textContent='คน';
-      $('kpiAbsent').textContent=Number(t.absent||0).toLocaleString();
+      $('kpiAbsent').textContent=Number(totals.absent).toLocaleString();
       $('kpiAbsentSub').textContent='คน';
-      $('kpiSick').textContent=Number(t.sick||0).toLocaleString();
+      $('kpiSick').textContent=Number(totals.sick).toLocaleString();
       $('kpiSickSub').textContent='คน';
     }else{
       $('kpiPresent').textContent=pctPresent+'%';
-      $('kpiPresentPct').textContent=`จากทั้งหมด ${totalAll.toLocaleString()} ครั้ง`;
+      $('kpiPresentPct').textContent='จากทั้งหมด '+totals.total.toLocaleString()+' ครั้ง';
       $('kpiLeave').textContent=pctLeave+'%';
-      $('kpiLeaveSub').textContent=`${Number(t.leave||0).toLocaleString()} ครั้ง`;
+      $('kpiLeaveSub').textContent=Number(totals.leave).toLocaleString()+' ครั้ง';
       $('kpiAbsent').textContent=pctAbsent+'%';
-      $('kpiAbsentSub').textContent=`${Number(t.absent||0).toLocaleString()} ครั้ง`;
+      $('kpiAbsentSub').textContent=Number(totals.absent).toLocaleString()+' ครั้ง';
       $('kpiSick').textContent=pctSick+'%';
-      $('kpiSickSub').textContent=`${Number(t.sick||0).toLocaleString()} ครั้ง`;
+      $('kpiSickSub').textContent=Number(totals.sick).toLocaleString()+' ครั้ง';
     }
-    
-    $('dashboardDateLabel').textContent=`${rangeInfo.label}${scope!=='all'?' · '+(CLASS_LABELS[scope]||scope):''} · ข้อมูล ณ ${formatThaiDate(todayISO())}`;
-    $('dashPrintHeader').innerHTML=`${SCHOOL_SETTINGS.school_logo?`<img src="${SCHOOL_SETTINGS.school_logo}" class="logo">`:''}<h2>${escapeHtml(SCHOOL_SETTINGS.school_name||'โรงเรียนบ้านถิ่นสำราญ')}</h2><p>รายงานสถิติการมาเรียน · ${rangeInfo.label}${scope!=='all'?' · '+(CLASS_LABELS[scope]||scope):''}</p><p>ข้อมูล ณ ${formatThaiDate(todayISO())}</p>`;
-    
-    // ⭐ ลบกราฟ Rank ออก — คงไว้แค่ Class, Donut, Stack
-    const showClassChart = scope==='all'; // แสดงเฉพาะเมื่อดูทั้งโรงเรียน
-    const showStackChart = !rangeInfo.daily; // แสดง stacked เฉพาะเมื่อไม่ใช่ daily
-    
+
+    const scopeLabel=scope==='all'?'':' · '+(CLASS_LABELS[scope]||scope);
+    $('dashboardDateLabel').textContent=rangeInfo.label+scopeLabel+' · ข้อมูล ณ '+formatThaiDate(todayISO());
+
+    $('dashPrintHeader').innerHTML=(SCHOOL_SETTINGS.school_logo?'<img src="'+SCHOOL_SETTINGS.school_logo+'" class="logo">':'')
+      +'<h2>'+escapeHtml(SCHOOL_SETTINGS.school_name||'โรงเรียนบ้านถิ่นสำราญ')+'</h2>'
+      +'<p>รายงานสถิติการมาเรียน · '+rangeInfo.label+scopeLabel+'</p>'
+      +'<p>ข้อมูล ณ '+formatThaiDate(todayISO())+'</p>';
+
+    const showClassChart=scope==='all';
+    const showStackChart=!rangeInfo.daily&&dailyStack.length>0;
     toggleChartCard('chartCardClass',showClassChart);
     toggleChartCard('chartCardDonut',true);
     toggleChartCard('chartCardStack',showStackChart);
-    
-    // ⭐ render charts
-    if(showClassChart){
-      renderClassChart(dashData.byClass||dashData.today||{},rangeInfo.daily);
-    }
-    renderDonutChart(t,rangeInfo.daily);
-    
-    if(showStackChart){
-      const stackData=(dashData.dailyStack||dashData.trend||[]).filter(x=>isDateInActiveTerm(x.date));
-      renderStackChart(stackData);
-    }
-    
+
+    if(showClassChart)renderClassChart(byClass,rangeInfo.daily);
+    renderDonutChart(totals,rangeInfo.daily);
+    if(showStackChart)renderStackChart(dailyStack);
+
     setSyncStatus(true,'พร้อม');
   }catch(e){
-    showToast('⚠️ โหลด Dashboard ล้มเหลว: '+e.message,'error');
-    ['chartClass','chartDonut','chartStack'].forEach(id=>showChartEmpty(id,'ไม่สามารถโหลดข้อมูลได้'));
+    console.error('Dashboard error:',e);
+    showToast('⚠️ โหลด Dashboard ล้มเหลว: '+e.message,'error',5000);
+    ['kpiPresent','kpiLeave','kpiAbsent','kpiSick'].forEach(id=>{if($(id))$(id).textContent='—';});
+    ['kpiPresentPct','kpiLeaveSub','kpiAbsentSub','kpiSickSub'].forEach(id=>{if($(id))$(id).textContent='—';});
+    ['chartClass','chartDonut','chartStack'].forEach(id=>showChartEmpty(id,e.message||'ไม่สามารถโหลดข้อมูลได้'));
   }
 }
 
@@ -1950,25 +1880,15 @@ function renderClassChart(cd,isDaily){
   const l=Object.keys(cd||{});
   if(!l.length){showChartEmpty('chartClass','ไม่มีข้อมูล');return;}
   clearChartEmpty('chartClass');
-  const v=l.map(c=>{const x=cd[c]||{};if(typeof x.percent==='number')return x.percent;if(x.total)return +(x.present/x.total*100).toFixed(2);return 0;});
+  l.sort((a,b)=>CLASS_ORDER.indexOf(a)-CLASS_ORDER.indexOf(b));
+  const v=l.map(c=>{const x=cd[c]||{};return x.percent!==undefined?x.percent:0;});
   const counts=l.map(c=>{const x=cd[c]||{};return {present:x.present||0,leave:x.leave||0,absent:x.absent||0,sick:x.sick||0,total:x.total||0};});
   charts['chartClass']=new Chart($('chartClass').getContext('2d'),{
     type:'bar',
     data:{labels:l.map(c=>CLASS_LABELS[c]||c),datasets:[{label:'% มาเรียน',data:v,backgroundColor:v.map(x=>x>=95?'#10b981':x>=80?'#fbbf24':x>0?'#f43f5e':'#cbd5e1'),borderRadius:8}]},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{
-          callbacks:{
-            title:(items)=>items[0].label,
-            label:(ctx)=>{const c=counts[ctx.dataIndex];return isDaily?[`มา: ${c.present} คน`,`ลา: ${c.leave} คน`,`ขาด: ${c.absent} คน`,`ป่วย: ${c.sick} คน`,`% มา: ${ctx.parsed.y}%`]:[`% มาเรียน: ${ctx.parsed.y}%`];}
-          }
-        }
-      },
-      scales:{y:{min:0,max:100,ticks:{callback:x=>x+'%',color:'#94a3b8'}},x:{ticks:{autoSkip:false,maxRotation:45,font:{size:10},color:'#94a3b8'}}}
-    }
-  });
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:(items)=>items[0].label,label:(ctx)=>{const c=counts[ctx.dataIndex];return isDaily?['มา: '+c.present+' คน','ลา: '+c.leave+' คน','ขาด: '+c.absent+' คน','ป่วย: '+c.sick+' คน','% มา: '+ctx.parsed.y+'%']:['% มาเรียน: '+ctx.parsed.y+'%','รวม '+c.total+' ครั้ง'];}}}},
+      scales:{y:{min:0,max:100,ticks:{callback:x=>x+'%',color:'#94a3b8'}},x:{ticks:{autoSkip:false,maxRotation:45,font:{size:10},color:'#94a3b8'}}}}});
 }
 
 function renderDonutChart(t,isDaily){
@@ -1976,62 +1896,34 @@ function renderDonutChart(t,isDaily){
   const tt=(t.present||0)+(t.leave||0)+(t.absent||0)+(t.sick||0);
   if(!tt){showChartEmpty('chartDonut','ยังไม่มีการบันทึก');return;}
   clearChartEmpty('chartDonut');
-  const totalAll=tt;
-  const pcts=[t.present||0,t.leave||0,t.absent||0,t.sick||0].map(x=>+(x/totalAll*100).toFixed(2));
+  const pcts=[t.present||0,t.leave||0,t.absent||0,t.sick||0].map(x=>+(x/tt*100).toFixed(2));
   charts['chartDonut']=new Chart($('chartDonut').getContext('2d'),{
     type:'doughnut',
     data:{labels:['มาเรียน','ลา','ขาด','ป่วย'],datasets:[{data:[t.present||0,t.leave||0,t.absent||0,t.sick||0],backgroundColor:['#10b981','#f59e0b','#f43f5e','#fb923c'],borderWidth:3,borderColor:document.documentElement.getAttribute('data-theme')==='dark'?'#0f172a':'#fff',hoverOffset:8}]},
-    options:{
-      responsive:true,maintainAspectRatio:false,cutout:'65%',
-      plugins:{
-        legend:{position:'bottom',labels:{padding:16,usePointStyle:true,pointStyle:'circle',color:'#94a3b8'}},
-        tooltip:{
-          callbacks:{
-            label:(ctx)=>{const v=ctx.parsed;const p=pcts[ctx.dataIndex];return isDaily?`${ctx.label}: ${v} คน (${p}%)`:`${ctx.label}: ${p}% (${v.toLocaleString()} ครั้ง)`;}
-          }
-        }
-      }
-    }
-  });
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
+      plugins:{legend:{position:'bottom',labels:{padding:16,usePointStyle:true,pointStyle:'circle',color:'#94a3b8'}},tooltip:{callbacks:{label:(ctx)=>{const v=ctx.parsed;const p=pcts[ctx.dataIndex];return isDaily?(ctx.label+': '+v+' คน ('+p+'%)'):(ctx.label+': '+p+'% ('+v.toLocaleString()+' ครั้ง)');}}}}}});
 }
 
 function renderStackChart(sd){
   destroyChart('chartStack');
   if(!sd||!sd.length){showChartEmpty('chartStack','ไม่มีข้อมูล');return;}
   clearChartEmpty('chartStack');
-  const ubc=sd[0].byClass!==undefined;
-  const rows=ubc?sd.map(t=>{const c=t.byClass||{};const s=k=>Object.values(c).reduce((a,x)=>a+(x[k]||0),0);return{date:t.date,present:s('present'),leave:s('leave'),absent:s('absent'),sick:s('sick')};}):sd;
+  const rows=sd;
   charts['chartStack']=new Chart($('chartStack').getContext('2d'),{
     type:'bar',
-    data:{
-      labels:rows.map(d=>formatThaiDate(d.date)),
-      datasets:[
-        {label:'มา',data:rows.map(d=>d.present||0),backgroundColor:'#10b981',stack:'s',borderRadius:3},
-        {label:'ลา',data:rows.map(d=>d.leave||0),backgroundColor:'#f59e0b',stack:'s',borderRadius:3},
-        {label:'ขาด',data:rows.map(d=>d.absent||0),backgroundColor:'#f43f5e',stack:'s',borderRadius:3},
-        {label:'ป่วย',data:rows.map(d=>d.sick||0),backgroundColor:'#fb923c',stack:'s',borderRadius:3}
-      ]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      interaction:{mode:'index',intersect:false},
-      scales:{x:{stacked:true,ticks:{autoSkip:true,maxTicksLimit:20,color:'#94a3b8'}},y:{stacked:true,beginAtZero:true,ticks:{color:'#94a3b8'}}},
-      plugins:{
-        legend:{position:'bottom',labels:{padding:16,usePointStyle:true,pointStyle:'circle',color:'#94a3b8'}},
-        tooltip:{
-          callbacks:{
-            label:(ctx)=>`${ctx.dataset.label}: ${ctx.parsed.y} คน`,
-            afterBody:(items)=>{const idx=items[0].dataIndex;const r=rows[idx];const tot=(r.present||0)+(r.leave||0)+(r.absent||0)+(r.sick||0);if(!tot)return '';const pp=+(r.present/tot*100).toFixed(2);const lp=+(r.leave/tot*100).toFixed(2);const ap=+(r.absent/tot*100).toFixed(2);const sp=+(r.sick/tot*100).toFixed(2);return ['','📊 สัดส่วน:','มา '+pp+'% · ลา '+lp+'%','ขาด '+ap+'% · ป่วย '+sp+'%'];}
-          }
-        }
-      }
-    }
-  });
+    data:{labels:rows.map(d=>formatThaiDate(d.date)),datasets:[
+      {label:'มา',data:rows.map(d=>d.present||0),backgroundColor:'#10b981',stack:'s',borderRadius:3},
+      {label:'ลา',data:rows.map(d=>d.leave||0),backgroundColor:'#f59e0b',stack:'s',borderRadius:3},
+      {label:'ขาด',data:rows.map(d=>d.absent||0),backgroundColor:'#f43f5e',stack:'s',borderRadius:3},
+      {label:'ป่วย',data:rows.map(d=>d.sick||0),backgroundColor:'#fb923c',stack:'s',borderRadius:3}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      scales:{x:{stacked:true,ticks:{autoSkip:true,maxTicksLimit:15,color:'#94a3b8'}},y:{stacked:true,beginAtZero:true,ticks:{color:'#94a3b8'}}},
+      plugins:{legend:{position:'bottom',labels:{padding:16,usePointStyle:true,pointStyle:'circle',color:'#94a3b8'}},
+        tooltip:{callbacks:{title:(items)=>rows[items[0].dataIndex]?formatThaiDate(rows[items[0].dataIndex].date):'',label:(ctx)=>ctx.dataset.label+': '+ctx.parsed.y+' คน',afterBody:(items)=>{const r=rows[items[0].dataIndex];if(!r)return '';const t=(r.present||0)+(r.leave||0)+(r.absent||0)+(r.sick||0);if(!t)return '';return ['','📊 สัดส่วน:','มา '+(r.present/t*100).toFixed(2)+'% · ลา '+(r.leave/t*100).toFixed(2)+'%','ขาด '+(r.absent/t*100).toFixed(2)+'% · ป่วย '+(r.sick/t*100).toFixed(2)+'%'];}}}}}});
 }
 
-function printDashboard(){
-  window.print();
-}
+function printDashboard(){window.print();}
 
 /* ============ REPORTS ============ */
 let reportsInit=false;
@@ -2048,7 +1940,7 @@ function initReports(){
 async function loadReportYearOptions(){
   const s=$('reportAcademicYear');if(!s)return;
   s.innerHTML='<option value="current">📗 ปีปัจจุบัน ('+CURRENT_YEAR+')</option>';
-  try{const r=await API.listArchivedYears();const ys=(r&&r.years)?r.years:(Array.isArray(r)?r:[]);ys.forEach(y=>s.add(new Option(`📦 ปีการศึกษา ${y} (Archive)`,y)));}catch(e){}
+  try{const r=await API.listArchivedYears();const ys=(r&&r.years)?r.years:(Array.isArray(r)?r:[]);ys.forEach(y=>s.add(new Option('📦 ปีการศึกษา '+y+' (Archive)',y)));}catch(e){}
 }
 function onReportYearChange(){const v=$('reportAcademicYear').value;if(v==='current'||v===''){$('fromYear').value=CURRENT_YEAR;$('toYear').value=CURRENT_YEAR;}else{$('fromYear').value=v;$('toYear').value=v;}}
 
@@ -2060,23 +1952,17 @@ async function loadReport(){
   catch(e){c.innerHTML=`<div class="card" style="color:var(--absent);padding:30px;text-align:center">⚠️ ${escapeHtml(e.message)}</div>`;}
 }
 
-// ⭐ NEW: Leaderboard (ไม่มีอีโมจิถ้วย)
 function renderLeaderboard(data){
-  const lb=$('reportLeaderboard');
-  if(!lb)return;
-  const byClass=data&&data.byClass?data.byClass:(data&&data.students?null:null);
-  
-  // ⭐ คำนวณ summary ต่อชั้นจาก students
+  const lb=$('reportLeaderboard');if(!lb)return;
+  const byClass=data&&data.byClass?data.byClass:null;
   let classStats={};
   if(data&&data.students&&data.students.length){
     data.students.forEach(s=>{
       const c=s.class||'ไม่ระบุ';
       if(!classStats[c])classStats[c]={present:0,leave:0,absent:0,sick:0,total:0};
       const sum=s.summary||{};
-      classStats[c].present+=sum.present||0;
-      classStats[c].leave+=sum.leave||0;
-      classStats[c].absent+=sum.absent||0;
-      classStats[c].sick+=sum.sick||0;
+      classStats[c].present+=sum.present||0;classStats[c].leave+=sum.leave||0;
+      classStats[c].absent+=sum.absent||0;classStats[c].sick+=sum.sick||0;
     });
     Object.values(classStats).forEach(x=>{x.total=x.present+x.leave+x.absent+x.sick;x.pct=x.total?+(x.present/x.total*100).toFixed(2):0;});
   }else if(byClass){
@@ -2085,71 +1971,31 @@ function renderLeaderboard(data){
       classStats[c]={present:x.present||0,leave:x.leave||0,absent:x.absent||0,sick:x.sick||0,total:t,pct:t?+((x.present||0)/t*100).toFixed(2):0};
     });
   }
-  
   const entries=Object.entries(classStats).filter(([c])=>CLASSES.indexOf(c)>=0).sort((a,b)=>(b[1].pct||0)-(a[1].pct||0));
-  
   if(!entries.length){lb.innerHTML='';return;}
-  
   const now=new Date();
-  const timeStr=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+  const timeStr=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
   const scope=$('reportScope').selectedOptions[0]?$('reportScope').selectedOptions[0].text:'ทั้งโรงเรียน';
   const fm=$('fromMonth').selectedOptions[0]?$('fromMonth').selectedOptions[0].text:'';
   const tm=$('toMonth').selectedOptions[0]?$('toMonth').selectedOptions[0].text:'';
   const yr=$('toYear').value;
-  
   const rows=entries.map(([c,x],i)=>{
-    const rank=i+1;
-    const rankCls=rank<=3?'rank-'+rank:'';
+    const rank=i+1;const rankCls=rank<=3?'rank-'+rank:'';
     const pctCls=x.pct>=95?'good':x.pct>=80?'warn':'bad';
-    const fmtN=n=>n?`<span class="lb-badge">${n}</span>`:`<span class="lb-badge zero">0</span>`;
-    return `<tr class="${rankCls}">
-      <td class="lb-rank">${rank}</td>
-      <td><div class="lb-name">${CLASS_LABELS[c]||c}<span class="lb-sub">ชั้น ${c}</span></div></td>
-      <td style="text-align:center">${fmtN(x.present)}</td>
-      <td style="text-align:center">${fmtN(x.leave)}</td>
-      <td style="text-align:center">${fmtN(x.absent)}</td>
-      <td style="text-align:center">${fmtN(x.sick)}</td>
-      <td style="text-align:center"><span class="lb-pct ${pctCls}">${x.pct}%</span></td>
-      <td style="text-align:center"><span class="lb-total">${x.total.toLocaleString()}</span></td>
-    </tr>`;
+    const fmtN=n=>n?'<span class="lb-badge">'+n+'</span>':'<span class="lb-badge zero">0</span>';
+    return '<tr class="'+rankCls+'"><td class="lb-rank">'+rank+'</td><td><div class="lb-name">'+(CLASS_LABELS[c]||c)+'<span class="lb-sub">ชั้น '+c+'</span></div></td><td style="text-align:center">'+fmtN(x.present)+'</td><td style="text-align:center">'+fmtN(x.leave)+'</td><td style="text-align:center">'+fmtN(x.absent)+'</td><td style="text-align:center">'+fmtN(x.sick)+'</td><td style="text-align:center"><span class="lb-pct '+pctCls+'">'+x.pct+'%</span></td><td style="text-align:center"><span class="lb-total">'+x.total.toLocaleString()+'</span></td></tr>';
   }).join('');
-  
-  lb.innerHTML=`<div class="leaderboard-card">
-    <div class="leaderboard-header">
-      <div class="leaderboard-title">สรุปการมาเรียน</div>
-      <div class="leaderboard-sub">${scope} · ${fm} - ${tm} ${yr} · อัปเดตล่าสุด: ${timeStr}</div>
-    </div>
-    <div class="lb-table-wrap">
-      <table class="lb-table">
-        <thead><tr>
-          <th class="center" style="width:60px">อันดับ</th>
-          <th>ชั้นเรียน</th>
-          <th class="center">มาเรียน</th>
-          <th class="center">ลา</th>
-          <th class="center">ขาด</th>
-          <th class="center">ป่วย</th>
-          <th class="center">% มา</th>
-          <th class="center">รวม</th>
-        </tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  </div>`;
+  lb.innerHTML='<div class="leaderboard-card"><div class="leaderboard-header"><div class="leaderboard-title">สรุปการมาเรียน</div><div class="leaderboard-sub">'+scope+' · '+fm+' - '+tm+' '+yr+' · อัปเดตล่าสุด: '+timeStr+'</div></div><div class="lb-table-wrap"><table class="lb-table"><thead><tr><th class="center" style="width:60px">อันดับ</th><th>ชั้นเรียน</th><th class="center">มาเรียน</th><th class="center">ลา</th><th class="center">ขาด</th><th class="center">ป่วย</th><th class="center">% มา</th><th class="center">รวม</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
 }
 
 function renderReportTable(data){
   const c=$('reportContent');
-  
-  // ⭐ Render leaderboard ก่อน
   renderLeaderboard(data);
-  
   if(data&&data.days&&!data.students){renderDailyReportLegacy(data);return;}
   if(!data||!data.students||!data.students.length){c.innerHTML=`<div class="card"><div class="empty-state"><div class="empty-state-icon">📑</div><h3>ไม่พบข้อมูลรายงาน</h3><p>ลองเปลี่ยนช่วงเดือน/ปี หรือเลือกชั้นเรียนอื่น</p></div></div>`;return;}
-  
   const rawDates=data.dates||[];
   const dates=rawDates.filter(d=>isDateInActiveTerm(d.date||d.iso||`${d.year}-${String(d.month||1).padStart(2,'0')}-${String(d.day).padStart(2,'0')}`));
   if(!dates.length){c.innerHTML=`<div class="card"><div class="report-empty"><div class="icon">📅</div><h3>ไม่มีวันที่อยู่ในช่วงเปิดภาคเรียน</h3><p>กรุณาตรวจสอบวันเปิด-ปิดภาคเรียนที่หน้า "ปีการศึกษา"</p></div></div>`;return;}
-  
   const ab=data.isArchive?`<div class="info-banner" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);color:#5b21b6;border-color:#c4b5fd"><span class="icon">📦</span><span><b>ข้อมูลย้อนหลัง</b> — ปีการศึกษา ${escapeHtml(String(data.academicYear||''))}</span></div>`:'';
   const summary=calculateReportSummary({students:data.students});
   const summaryHtml=renderReportSummary(summary,'สรุปสถิติภาพรวม');
@@ -2160,232 +2006,148 @@ function renderReportTable(data){
     return `<tr><td class="col-stick-1" style="text-align:center;font-weight:600;color:var(--ink-3)">${i+1}</td><td class="col-stick-2 has-shadow-right" style="white-space:nowrap"><b>${escapeHtml(s.fullName||'-')}</b></td><td style="text-align:center"><span class="badge blue">${escapeHtml(s.class||'')}</span></td>${cells}<td style="text-align:center;font-weight:700;color:var(--present-dark)">${sum.present||0}</td><td style="text-align:center;font-weight:700;color:var(--leave-dark)">${sum.leave||0}</td><td style="text-align:center;font-weight:700;color:var(--absent-dark)">${sum.absent||0}</td><td style="text-align:center;font-weight:700;color:var(--sick-dark)">${sum.sick||0}</td><td style="text-align:center;font-weight:800;color:var(--brand)">${sum.percent||0}%</td></tr>`;
   }).join('');
   const st=$('reportScope').selectedOptions[0]?$('reportScope').selectedOptions[0].text:'ทั้งโรงเรียน';
-  const ft=`${$('fromMonth').selectedOptions[0].text} ${$('fromYear').value}`;
-  const tt=`${$('toMonth').selectedOptions[0].text} ${$('toYear').value}`;
-  
-  // ⭐ หาครูประจำชั้น
+  const ft=$('fromMonth').selectedOptions[0].text+' '+$('fromYear').value;
+  const tt=$('toMonth').selectedOptions[0].text+' '+$('toYear').value;
   const targetClass=$('reportScope').value;
   const teacher=(TEACHER_LIST_CACHE||[]).find(x=>targetClass!=='all'&&(x.classes||[]).indexOf(targetClass)>=0);
-  const teacherSig=teacher&&teacher.signature?`<img src="${teacher.signature}" style="max-height:50px;margin:0 auto 4px">`:'';
-  
-  c.innerHTML=`${ab}
-    <div class="print-header">${SCHOOL_SETTINGS.school_logo?`<img src="${SCHOOL_SETTINGS.school_logo}" class="logo">`:''}<h2>${escapeHtml(SCHOOL_SETTINGS.school_name||'โรงเรียนบ้านถิ่นสำราญ')}</h2><p>${escapeHtml(SCHOOL_SETTINGS.school_address||'')}</p><p><b>แบบบันทึกเวลาเรียน (ปพ.5)</b> — ${escapeHtml(st)}</p><p>ช่วงเวลา: ${escapeHtml(ft)} ถึง ${escapeHtml(tt)}</p></div>
-    ${summaryHtml}
-    <div class="card report-desktop-table" style="padding:0;overflow:hidden"><div class="table-info-bar" style="border-radius:0;border-left:0;border-right:0"><span>📊 นักเรียน ${data.students.length} คน · ${dates.length} วัน (เฉพาะวันเปิดภาคเรียน)</span></div><div class="sticky-table-wrap" id="reportStickyWrap" style="border:none;border-radius:0;max-height:calc(100vh - 400px)"><table class="sticky-table" style="font-size:12px"><thead><tr><th class="col-stick-1 has-shadow-right" style="width:38px;text-align:center">ที่</th><th class="col-stick-2 has-shadow-right" style="min-width:150px">ชื่อ-สกุล</th><th style="width:55px;text-align:center">ชั้น</th>${hd}<th style="width:38px;text-align:center;color:var(--present-dark)" title="มา">มา</th><th style="width:38px;text-align:center;color:var(--leave-dark)" title="ลา">ลา</th><th style="width:38px;text-align:center;color:var(--absent-dark)" title="ขาด">ขาด</th><th style="width:38px;text-align:center;color:var(--sick-dark)" title="ป่วย">ป่วย</th><th style="width:48px;text-align:center">%</th></tr></thead><tbody>${rows}</tbody></table></div></div>
-    <div class="print-signature" style="display:flex;justify-content:space-between;margin-top:24px;gap:20px;flex-wrap:wrap"><div style="text-align:center;min-width:220px">${teacherSig}<div style="margin-bottom:4px">ลงชื่อ ....................................................</div><div>( ${escapeHtml(teacher?teacher.fullName:'....................................................')} )</div><div style="font-size:11px;color:#555">${teacher?escapeHtml(teacher.position||'ครูประจำชั้น'):'ครูประจำชั้น'}</div></div><div style="text-align:center;min-width:220px">${SCHOOL_SETTINGS.director_signature?`<img src="${SCHOOL_SETTINGS.director_signature}" style="max-height:45px;margin:0 auto 4px">`:''}<div style="margin-bottom:4px">ลงชื่อ ....................................................</div><div>( ${escapeHtml(SCHOOL_SETTINGS.director_name||'....................................................')} )</div><div style="font-size:11px;color:#555">ผู้อำนวยการโรงเรียน</div></div></div>`;
-  
-  // ⭐ Mobile cards
+  const teacherSig=teacher&&teacher.signature?'<img src="'+teacher.signature+'" style="max-height:50px;margin:0 auto 4px">':'';
+  c.innerHTML=ab+
+    '<div class="print-header">'+(SCHOOL_SETTINGS.school_logo?'<img src="'+SCHOOL_SETTINGS.school_logo+'" class="logo">':'')+'<h2>'+escapeHtml(SCHOOL_SETTINGS.school_name||'โรงเรียนบ้านถิ่นสำราญ')+'</h2><p>'+escapeHtml(SCHOOL_SETTINGS.school_address||'')+'</p><p><b>แบบบันทึกเวลาเรียน (ปพ.5)</b> — '+escapeHtml(st)+'</p><p>ช่วงเวลา: '+escapeHtml(ft)+' ถึง '+escapeHtml(tt)+'</p></div>'+
+    summaryHtml+
+    '<div class="card report-desktop-table" style="padding:0;overflow:hidden"><div class="table-info-bar" style="border-radius:0;border-left:0;border-right:0"><span>📊 นักเรียน '+data.students.length+' คน · '+dates.length+' วัน (เฉพาะวันเปิดภาคเรียน)</span></div><div class="sticky-table-wrap" id="reportStickyWrap" style="border:none;border-radius:0;max-height:calc(100vh - 400px)"><table class="sticky-table" style="font-size:12px"><thead><tr><th class="col-stick-1 has-shadow-right" style="width:38px;text-align:center">ที่</th><th class="col-stick-2 has-shadow-right" style="min-width:150px">ชื่อ-สกุล</th><th style="width:55px;text-align:center">ชั้น</th>'+hd+'<th style="width:38px;text-align:center;color:var(--present-dark)" title="มา">มา</th><th style="width:38px;text-align:center;color:var(--leave-dark)" title="ลา">ลา</th><th style="width:38px;text-align:center;color:var(--absent-dark)" title="ขาด">ขาด</th><th style="width:38px;text-align:center;color:var(--sick-dark)" title="ป่วย">ป่วย</th><th style="width:48px;text-align:center">%</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'+
+    '<div class="print-signature" style="display:flex;justify-content:space-between;margin-top:24px;gap:20px;flex-wrap:wrap"><div style="text-align:center;min-width:220px">'+teacherSig+'<div style="margin-bottom:4px">ลงชื่อ ....................................................</div><div>( '+escapeHtml(teacher?teacher.fullName:'....................................................')+' )</div><div style="font-size:11px;color:#555">'+(teacher?escapeHtml(teacher.position||'ครูประจำชั้น'):'ครูประจำชั้น')+'</div></div><div style="text-align:center;min-width:220px">'+(SCHOOL_SETTINGS.director_signature?'<img src="'+SCHOOL_SETTINGS.director_signature+'" style="max-height:45px;margin:0 auto 4px">':'')+'<div style="margin-bottom:4px">ลงชื่อ ....................................................</div><div>( '+escapeHtml(SCHOOL_SETTINGS.director_name||'....................................................')+' )</div><div style="font-size:11px;color:#555">ผู้อำนวยการโรงเรียน</div></div></div>';
   renderMobileReportCards(data,dates);
   setTimeout(setupAllStickyTables,100);
 }
 
-// ⭐ NEW: Mobile report cards
 function renderMobileReportCards(data,dates){
   const c=$('reportContent');
-  // ลบของเก่า
   const old=c.querySelector('.report-mobile-cards');if(old)old.remove();
-  
-  // สร้าง cards (แสดงตามวัน)
   const dayStats={};
   data.students.forEach(s=>{
     dates.forEach(d=>{
       const k=d.date||d.iso||`${d.year}-${String(d.month||1).padStart(2,'0')}-${String(d.day).padStart(2,'0')}`;
       const st=(s.attendance&&s.attendance[k])||'';
       if(!st)return;
-      if(!dayStats[k])dayStats[k]={present:0,leave:0,absent:0,sick:0,notes:[],day:d.day,weekday:d.weekdayShort||WEEKDAYS_SHORT[new Date(k).getDay()]};
+      if(!dayStats[k])dayStats[k]={present:0,leave:0,absent:0,sick:0,notes:[],day:d.day,weekday:d.weekdayShort||''};
       if(st==='/')dayStats[k].present++;
-      else if(st==='ล'){dayStats[k].leave++;dayStats[k].notes.push('ลา: '+s.nickname||s.fullName);}
-      else if(st==='ข'){dayStats[k].absent++;dayStats[k].notes.push('ขาด: '+s.nickname||s.fullName);}
-      else if(st==='ป'){dayStats[k].sick++;dayStats[k].notes.push('ป่วย: '+s.nickname||s.fullName);}
+      else if(st==='ล'){dayStats[k].leave++;dayStats[k].notes.push('ลา: '+(s.nickname||s.fullName));}
+      else if(st==='ข'){dayStats[k].absent++;dayStats[k].notes.push('ขาด: '+(s.nickname||s.fullName));}
+      else if(st==='ป'){dayStats[k].sick++;dayStats[k].notes.push('ป่วย: '+(s.nickname||s.fullName));}
     });
   });
-  
   const cards=Object.entries(dayStats).sort((a,b)=>a[0].localeCompare(b[0])).map(([k,x])=>{
     const tot=x.present+x.leave+x.absent+x.sick;
     const pct=tot?+(x.present/tot*100).toFixed(2):0;
     const cls=pct>=90?'good':pct>=80?'warn':'bad';
-    const clsStat=pct>=90?'good':pct>=80?'warn':'bad';
-    return `<div class="report-mc ${clsStat}">
-      <div class="report-mc-head">
-        <div class="report-mc-date">วันที่ ${x.day}<span class="report-mc-wd">${x.weekday}</span></div>
-        <div class="report-mc-pct ${cls}">${pct}%</div>
-      </div>
-      <div class="report-mc-grid">
-        <div class="report-mc-stat present"><div class="lbl">มา</div><div class="val">${x.present}</div></div>
-        <div class="report-mc-stat leave"><div class="lbl">ลา</div><div class="val">${x.leave}</div></div>
-        <div class="report-mc-stat absent"><div class="lbl">ขาด</div><div class="val">${x.absent}</div></div>
-        <div class="report-mc-stat sick"><div class="lbl">ป่วย</div><div class="val">${x.sick}</div></div>
-      </div>
-      ${x.notes.length?`<div class="report-mc-notes">${x.notes.join(' · ')}</div>`:''}
-    </div>`;
+    return '<div class="report-mc '+cls+'"><div class="report-mc-head"><div class="report-mc-date">วันที่ '+x.day+'<span class="report-mc-wd">'+x.weekday+'</span></div><div class="report-mc-pct '+cls+'">'+pct+'%</div></div><div class="report-mc-grid"><div class="report-mc-stat present"><div class="lbl">มา</div><div class="val">'+x.present+'</div></div><div class="report-mc-stat leave"><div class="lbl">ลา</div><div class="val">'+x.leave+'</div></div><div class="report-mc-stat absent"><div class="lbl">ขาด</div><div class="val">'+x.absent+'</div></div><div class="report-mc-stat sick"><div class="lbl">ป่วย</div><div class="val">'+x.sick+'</div></div></div>'+(x.notes.length?'<div class="report-mc-notes">'+x.notes.join(' · ')+'</div>':'')+'</div>';
   }).join('');
-  
   const wrap=document.createElement('div');
   wrap.className='report-mobile-cards';
-  wrap.innerHTML=cards||`<div class="report-empty"><div class="icon">📅</div><h3>ไม่มีข้อมูล</h3></div>`;
+  wrap.innerHTML=cards||'<div class="report-empty"><div class="icon">📅</div><h3>ไม่มีข้อมูล</h3></div>';
   c.appendChild(wrap);
 }
 
 function renderDailyReportLegacy(data){
   const c=$('reportContent');
-  if(!data.days||!data.days.length){c.innerHTML=`<div class="card"><div class="empty-state"><div class="empty-state-icon">📋</div><h3>ไม่พบข้อมูล</h3></div></div>`;return;}
-  const filtered=data.days.filter(d=>{if(d.status==='weekend')return false;let ds=d.date||d.iso;if(!ds&&d.day&&d.month&&d.year)ds=`${d.year}-${String(d.month).padStart(2,'0')}-${String(d.day).padStart(2,'0')}`;return isDateInActiveTerm(ds);});
-  if(!filtered.length){c.innerHTML=`<div class="card"><div class="report-empty"><div class="icon">📅</div><h3>ไม่มีข้อมูลในช่วงเวลาที่เลือก</h3><p>ช่วงเดือน/ปีที่เลือก ไม่มีวันที่อยู่ในช่วงเปิด-ปิดภาคเรียน</p></div></div>`;return;}
+  if(!data.days||!data.days.length){c.innerHTML='<div class="card"><div class="empty-state"><div class="empty-state-icon">📋</div><h3>ไม่พบข้อมูล</h3></div></div>';return;}
+  const filtered=data.days.filter(d=>{if(d.status==='weekend')return false;let ds=d.date||d.iso;if(!ds&&d.day&&d.month&&d.year)ds=d.year+'-'+String(d.month).padStart(2,'0')+'-'+String(d.day).padStart(2,'0');return isDateInActiveTerm(ds);});
+  if(!filtered.length){c.innerHTML='<div class="card"><div class="report-empty"><div class="icon">📅</div><h3>ไม่มีข้อมูลในช่วงเวลาที่เลือก</h3><p>ช่วงเดือน/ปีที่เลือก ไม่มีวันที่อยู่ในช่วงเปิด-ปิดภาคเรียน</p></div></div>';return;}
   const summary=calculateReportSummary({days:filtered});const summaryHtml=renderReportSummary(summary,'สรุปสถิติตามช่วงเวลา');
-  const tr=filtered.map(d=>{if(d.status==='holiday')return `<tr style="background:var(--leave-bg)"><td class="col-stick-1" style="text-align:center">${d.day}</td><td class="col-stick-2 has-shadow-right">${d.monthShort||''} ${d.year}</td><td colspan="7" style="text-align:center;color:var(--leave-dark);font-weight:600">วันหยุด</td></tr>`;const pct=d.total?+(d.present/d.total*100).toFixed(2):0;const co=pct>=90?'var(--present-dark)':pct>=80?'var(--leave-dark)':'var(--absent-dark)';const ns=[];if(d.leaveNames&&d.leaveNames.length)ns.push('ลา: '+d.leaveNames.join(', '));if(d.sickNames&&d.sickNames.length)ns.push('ป่วย: '+d.sickNames.join(', '));if(d.absentNames&&d.absentNames.length)ns.push('ขาด: '+d.absentNames.join(', '));return `<tr><td class="col-stick-1" style="text-align:center">${d.day}</td><td class="col-stick-2 has-shadow-right">${d.monthShort||''} ${d.year}</td><td style="font-weight:700">${d.total}</td><td style="color:var(--present-dark);font-weight:700">${d.present}</td><td style="color:var(--sick-dark);font-weight:700">${d.sick}</td><td style="color:var(--leave-dark);font-weight:700">${d.leave}</td><td style="color:var(--absent-dark);font-weight:700">${d.absent}</td><td><b style="color:${co}">${pct}%</b></td><td class="hide-mobile" style="font-size:11px;color:var(--ink-3);max-width:280px;white-space:normal">${escapeHtml(ns.join(' | '))}</td></tr>`;}).join('');
+  const tr=filtered.map(d=>{if(d.status==='holiday')return '<tr style="background:var(--leave-bg)"><td class="col-stick-1" style="text-align:center">'+d.day+'</td><td class="col-stick-2 has-shadow-right">'+(d.monthShort||'')+' '+d.year+'</td><td colspan="7" style="text-align:center;color:var(--leave-dark);font-weight:600">วันหยุด</td></tr>';const pct=d.total?+(d.present/d.total*100).toFixed(2):0;const co=pct>=90?'var(--present-dark)':pct>=80?'var(--leave-dark)':'var(--absent-dark)';const ns=[];if(d.leaveNames&&d.leaveNames.length)ns.push('ลา: '+d.leaveNames.join(', '));if(d.sickNames&&d.sickNames.length)ns.push('ป่วย: '+d.sickNames.join(', '));if(d.absentNames&&d.absentNames.length)ns.push('ขาด: '+d.absentNames.join(', '));return '<tr><td class="col-stick-1" style="text-align:center">'+d.day+'</td><td class="col-stick-2 has-shadow-right">'+(d.monthShort||'')+' '+d.year+'</td><td style="font-weight:700">'+d.total+'</td><td style="color:var(--present-dark);font-weight:700">'+d.present+'</td><td style="color:var(--sick-dark);font-weight:700">'+d.sick+'</td><td style="color:var(--leave-dark);font-weight:700">'+d.leave+'</td><td style="color:var(--absent-dark);font-weight:700">'+d.absent+'</td><td><b style="color:'+co+'">'+pct+'%</b></td><td class="hide-mobile" style="font-size:11px;color:var(--ink-3);max-width:280px;white-space:normal">'+escapeHtml(ns.join(' | '))+'</td></tr>';}).join('');
   const td=filtered.filter(d=>d.status==='normal').length;
   const targetClass=$('reportScope').value;
   const teacher=(TEACHER_LIST_CACHE||[]).find(x=>targetClass!=='all'&&(x.classes||[]).indexOf(targetClass)>=0);
-  const teacherSig=teacher&&teacher.signature?`<img src="${teacher.signature}" style="max-height:50px;margin:0 auto 4px">`:'';
-  c.innerHTML=`<div class="print-header">${SCHOOL_SETTINGS.school_logo?`<img src="${SCHOOL_SETTINGS.school_logo}" class="logo">`:''}<h2>${escapeHtml(SCHOOL_SETTINGS.school_name||'โรงเรียนบ้านถิ่นสำราญ')}</h2><p>${escapeHtml(SCHOOL_SETTINGS.school_address||'')}</p><p>สถิติการมาเรียน${data.classLabel!=='ทั้งโรงเรียน'?'ของนักเรียนชั้น '+data.classLabel:'ของนักเรียนทั้งโรงเรียน'}</p><p>${escapeHtml(data.fromLabel||'')} ถึง ${escapeHtml(data.toLabel||'')}</p></div>${summaryHtml}<div class="card report-desktop-table" style="padding:0;overflow:hidden"><div class="table-info-bar" style="border-radius:0;border-left:0;border-right:0"><span>📋 ${filtered.length} วัน · ${td} วันเรียน</span></div><div class="sticky-table-wrap" id="reportStickyWrap" style="border:none;border-radius:0;max-height:calc(100vh - 400px)"><table class="sticky-table"><thead><tr><th class="col-stick-1 has-shadow-right" style="width:55px;text-align:center">วันที่</th><th class="col-stick-2 has-shadow-right" style="width:95px">เดือน/ปี</th><th style="width:75px">เต็ม</th><th style="width:65px">มา</th><th style="width:55px">ป่วย</th><th style="width:55px">ลา</th><th style="width:55px">ขาด</th><th style="width:65px">%</th><th class="hide-mobile" style="min-width:280px">หมายเหตุ</th></tr></thead><tbody>${tr}</tbody></table></div></div>
-    <div class="print-signature" style="display:flex;justify-content:space-between;margin-top:24px;gap:20px;flex-wrap:wrap"><div style="text-align:center;min-width:220px">${teacherSig}<div style="margin-bottom:4px">ลงชื่อ ....................................................</div><div>( ${escapeHtml(teacher?teacher.fullName:'....................................................')} )</div><div style="font-size:11px;color:#555">${teacher?escapeHtml(teacher.position||'ครูประจำชั้น'):'ครูประจำชั้น'}</div></div><div style="text-align:center;min-width:220px">${SCHOOL_SETTINGS.director_signature?`<img src="${SCHOOL_SETTINGS.director_signature}" style="max-height:45px;margin:0 auto 4px">`:''}<div style="margin-bottom:4px">ลงชื่อ ....................................................</div><div>( ${escapeHtml(SCHOOL_SETTINGS.director_name||'....................................................')} )</div><div style="font-size:11px;color:#555">ผู้อำนวยการโรงเรียน</div></div></div>`;
-  
-  // ⭐ Mobile cards
+  const teacherSig=teacher&&teacher.signature?'<img src="'+teacher.signature+'" style="max-height:50px;margin:0 auto 4px">':'';
+  c.innerHTML='<div class="print-header">'+(SCHOOL_SETTINGS.school_logo?'<img src="'+SCHOOL_SETTINGS.school_logo+'" class="logo">':'')+'<h2>'+escapeHtml(SCHOOL_SETTINGS.school_name||'โรงเรียนบ้านถิ่นสำราญ')+'</h2><p>'+escapeHtml(SCHOOL_SETTINGS.school_address||'')+'</p><p>สถิติการมาเรียน'+(data.classLabel!=='ทั้งโรงเรียน'?'ของนักเรียนชั้น '+data.classLabel:'ของนักเรียนทั้งโรงเรียน')+'</p><p>'+escapeHtml(data.fromLabel||'')+' ถึง '+escapeHtml(data.toLabel||'')+'</p></div>'+summaryHtml+'<div class="card report-desktop-table" style="padding:0;overflow:hidden"><div class="table-info-bar" style="border-radius:0;border-left:0;border-right:0"><span>📋 '+filtered.length+' วัน · '+td+' วันเรียน</span></div><div class="sticky-table-wrap" id="reportStickyWrap" style="border:none;border-radius:0;max-height:calc(100vh - 400px)"><table class="sticky-table"><thead><tr><th class="col-stick-1 has-shadow-right" style="width:55px;text-align:center">วันที่</th><th class="col-stick-2 has-shadow-right" style="width:95px">เดือน/ปี</th><th style="width:75px">เต็ม</th><th style="width:65px">มา</th><th style="width:55px">ป่วย</th><th style="width:55px">ลา</th><th style="width:55px">ขาด</th><th style="width:65px">%</th><th class="hide-mobile" style="min-width:280px">หมายเหตุ</th></tr></thead><tbody>'+tr+'</tbody></table></div></div><div class="print-signature" style="display:flex;justify-content:space-between;margin-top:24px;gap:20px;flex-wrap:wrap"><div style="text-align:center;min-width:220px">'+teacherSig+'<div style="margin-bottom:4px">ลงชื่อ ....................................................</div><div>( '+escapeHtml(teacher?teacher.fullName:'....................................................')+' )</div><div style="font-size:11px;color:#555">'+(teacher?escapeHtml(teacher.position||'ครูประจำชั้น'):'ครูประจำชั้น')+'</div></div><div style="text-align:center;min-width:220px">'+(SCHOOL_SETTINGS.director_signature?'<img src="'+SCHOOL_SETTINGS.director_signature+'" style="max-height:45px;margin:0 auto 4px">':'')+'<div style="margin-bottom:4px">ลงชื่อ ....................................................</div><div>( '+escapeHtml(SCHOOL_SETTINGS.director_name||'....................................................')+' )</div><div style="font-size:11px;color:#555">ผู้อำนวยการโรงเรียน</div></div></div>';
   const wrap=document.createElement('div');
   wrap.className='report-mobile-cards';
   wrap.innerHTML=filtered.map(d=>{
-    if(d.status==='holiday')return `<div class="report-mc"><div class="report-mc-head"><div class="report-mc-date">วันที่ ${d.day}<span class="report-mc-wd">${d.monthShort||''} ${d.year}</span></div></div><div class="report-mc-notes">วันหยุด</div></div>`;
+    if(d.status==='holiday')return '<div class="report-mc"><div class="report-mc-head"><div class="report-mc-date">วันที่ '+d.day+'<span class="report-mc-wd">'+(d.monthShort||'')+' '+d.year+'</span></div></div><div class="report-mc-notes">วันหยุด</div></div>';
     const pct=d.total?+(d.present/d.total*100).toFixed(2):0;
     const cls=pct>=90?'good':pct>=80?'warn':'bad';
     const notes=[];
     if(d.leaveNames&&d.leaveNames.length)notes.push('ลา: '+d.leaveNames.join(', '));
     if(d.sickNames&&d.sickNames.length)notes.push('ป่วย: '+d.sickNames.join(', '));
     if(d.absentNames&&d.absentNames.length)notes.push('ขาด: '+d.absentNames.join(', '));
-    return `<div class="report-mc ${cls}">
-      <div class="report-mc-head">
-        <div class="report-mc-date">วันที่ ${d.day}<span class="report-mc-wd">${d.monthShort||''} ${d.year}</span></div>
-        <div class="report-mc-pct ${cls}">${pct}%</div>
-      </div>
-      <div class="report-mc-grid">
-        <div class="report-mc-stat present"><div class="lbl">มา</div><div class="val">${d.present||0}</div></div>
-        <div class="report-mc-stat leave"><div class="lbl">ลา</div><div class="val">${d.leave||0}</div></div>
-        <div class="report-mc-stat absent"><div class="lbl">ขาด</div><div class="val">${d.absent||0}</div></div>
-        <div class="report-mc-stat sick"><div class="lbl">ป่วย</div><div class="val">${d.sick||0}</div></div>
-      </div>
-      ${notes.length?`<div class="report-mc-notes">${escapeHtml(notes.join(' | '))}</div>`:''}
-    </div>`;
+    return '<div class="report-mc '+cls+'"><div class="report-mc-head"><div class="report-mc-date">วันที่ '+d.day+'<span class="report-mc-wd">'+(d.monthShort||'')+' '+d.year+'</span></div><div class="report-mc-pct '+cls+'">'+pct+'%</div></div><div class="report-mc-grid"><div class="report-mc-stat present"><div class="lbl">มา</div><div class="val">'+(d.present||0)+'</div></div><div class="report-mc-stat leave"><div class="lbl">ลา</div><div class="val">'+(d.leave||0)+'</div></div><div class="report-mc-stat absent"><div class="lbl">ขาด</div><div class="val">'+(d.absent||0)+'</div></div><div class="report-mc-stat sick"><div class="lbl">ป่วย</div><div class="val">'+(d.sick||0)+'</div></div></div>'+(notes.length?'<div class="report-mc-notes">'+escapeHtml(notes.join(' | '))+'</div>':'')+'</div>';
   }).join('');
   c.appendChild(wrap);
   setTimeout(setupAllStickyTables,100);
 }
 
-/* ============ EXPORT EXCEL (⭐ NEW) ============ */
+/* ============ EXPORT EXCEL ============ */
 function exportReportExcel(){
   if(!LAST_REPORT_DATA){showToast('กรุณาแสดงรายงานก่อน','error');return;}
   if(typeof XLSX==='undefined'){showToast('ไม่สามารถโหลดไลบรารี Excel ได้','error');return;}
-  
   const d=LAST_REPORT_DATA;
   const wb=XLSX.utils.book_new();
-  
   const schoolName=SCHOOL_SETTINGS.school_name||'โรงเรียนบ้านถิ่นสำราญ';
   const schoolAddr=SCHOOL_SETTINGS.school_address||'';
   const directorName=SCHOOL_SETTINGS.director_name||'';
   const scopeText=$('reportScope').selectedOptions[0]?$('reportScope').selectedOptions[0].text:'ทั้งโรงเรียน';
   const targetClass=$('reportScope').value;
   const teacher=(TEACHER_LIST_CACHE||[]).find(x=>targetClass!=='all'&&(x.classes||[]).indexOf(targetClass)>=0);
-  
-  // ⭐ กรณี: students × dates (ตาราง ปพ.5)
   if(d.students&&d.dates){
-    // แยกตามเดือน → sheet ต่อเดือน
     const byMonth={};
     d.dates.forEach(dt=>{
       const iso=dt.date||dt.iso||`${dt.year}-${String(dt.month||1).padStart(2,'0')}-${String(dt.day).padStart(2,'0')}`;
-      const key=`${dt.year}-${String(dt.month).padStart(2,'0')}`;
+      const key=dt.year+'-'+String(dt.month).padStart(2,'0');
       if(!byMonth[key])byMonth[key]={year:dt.year,month:dt.month,dates:[]};
-      byMonth[key].dates.push({...dt,iso});
+      byMonth[key].dates.push(Object.assign({},dt,{iso:iso}));
     });
-    
     Object.entries(byMonth).sort().forEach(([key,m])=>{
-      const sheetName=`${MONTHS_SHORT[m.month]} ${m.year}`.slice(0,31);
+      const sheetName=(MONTHS_SHORT[m.month]+' '+m.year).slice(0,31);
       const aoa=[];
-      // Row 1: โรงเรียน
       aoa.push([schoolName]);
       if(schoolAddr)aoa.push([schoolAddr]);
-      aoa.push(['สถิติการมาเรียนของนักเรียน'+(targetClass!=='all'?`ชั้น ${CLASS_LABELS[targetClass]||targetClass}`:'ทั้งโรงเรียน')]);
-      aoa.push([`ประจำเดือน ${MONTHS_TH[m.month]} ${m.year}`]);
-      aoa.push([]); // ว่าง
-      // Header
-      const header=['ที่','ชื่อ-สกุล','ชั้น',...m.dates.map(dt=>`${dt.day}`),'มา','ลา','ขาด','ป่วย','%'];
+      aoa.push(['สถิติการมาเรียนของนักเรียน'+(targetClass!=='all'?'ชั้น '+(CLASS_LABELS[targetClass]||targetClass):'ทั้งโรงเรียน')]);
+      aoa.push(['ประจำเดือน '+MONTHS_TH[m.month]+' '+m.year]);
+      aoa.push([]);
+      const header=['ที่','ชื่อ-สกุล','ชั้น'].concat(m.dates.map(dt=>String(dt.day)),['มา','ลา','ขาด','ป่วย','%']);
       aoa.push(header);
-      // Rows
       d.students.forEach((s,i)=>{
         const row=[i+1,s.fullName||'',s.class||''];
-        m.dates.forEach(dt=>{
-          const st=(s.attendance&&(s.attendance[dt.iso]||s.attendance[dt.date]))||'';
-          row.push(st||'');
-        });
+        m.dates.forEach(dt=>{const st=(s.attendance&&(s.attendance[dt.iso]||s.attendance[dt.date]))||'';row.push(st||'');});
         const sum=s.summary||{};
         row.push(sum.present||0,sum.leave||0,sum.absent||0,sum.sick||0,(sum.percent||0)+'%');
         aoa.push(row);
       });
       aoa.push([]);
-      // ลายเซ็น
-      aoa.push(['','','','','','','','',`ลงชื่อ ....................................................`]);
-      aoa.push(['','','','','','','','',`( ${teacher?teacher.fullName:'....................................................'} )`]);
-      aoa.push(['','','','','','','','',`${teacher?teacher.position||'ครูประจำชั้น':'ครูประจำชั้น'}`]);
+      aoa.push(['','','','','','','','','ลงชื่อ ....................................................']);
+      aoa.push(['','','','','','','','','( '+(teacher?teacher.fullName:'....................................................')+' )']);
+      aoa.push(['','','','','','','','',''+(teacher?teacher.position||'ครูประจำชั้น':'ครูประจำชั้น')]);
       aoa.push([]);
-      aoa.push(['','','','','','','','',`ลงชื่อ ....................................................`]);
-      aoa.push(['','','','','','','','',`( ${directorName||'....................................................'} )`]);
+      aoa.push(['','','','','','','','','ลงชื่อ ....................................................']);
+      aoa.push(['','','','','','','','','( '+(directorName||'....................................................')+' )']);
       aoa.push(['','','','','','','','','ผู้อำนวยการโรงเรียน']);
-      
       const ws=XLSX.utils.aoa_to_sheet(aoa);
-      // Merge cells for title rows
-      ws['!merges']=[
-        {s:{r:0,c:0},e:{r:0,c:header.length-1}},
-        {s:{r:1,c:0},e:{r:1,c:header.length-1}},
-        {s:{r:2,c:0},e:{r:2,c:header.length-1}},
-        {s:{r:3,c:0},e:{r:3,c:header.length-1}}
-      ];
-      // Column widths
-      ws['!cols']=[{wch:5},{wch:24},{wch:6},...m.dates.map(()=>({wch:5})),{wch:6},{wch:6},{wch:6},{wch:6},{wch:8}];
+      ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:header.length-1}},{s:{r:1,c:0},e:{r:1,c:header.length-1}},{s:{r:2,c:0},e:{r:2,c:header.length-1}},{s:{r:3,c:0},e:{r:3,c:header.length-1}}];
+      ws['!cols']=[{wch:5},{wch:24},{wch:6}].concat(m.dates.map(()=>({wch:5})),[{wch:6},{wch:6},{wch:6},{wch:6},{wch:8}]);
       XLSX.utils.book_append_sheet(wb,ws,sheetName);
     });
-  }
-  // ⭐ กรณี: daily days
-  else if(d.days){
+  }else if(d.days){
     const byMonth={};
-    d.days.forEach(x=>{
-      if(x.status==='weekend')return;
-      const key=`${x.year}-${String(x.month||1).padStart(2,'0')}`;
-      if(!byMonth[key])byMonth[key]={year:x.year,month:x.month||1,days:[]};
-      byMonth[key].days.push(x);
-    });
+    d.days.forEach(x=>{if(x.status==='weekend')return;const key=x.year+'-'+String(x.month||1).padStart(2,'0');if(!byMonth[key])byMonth[key]={year:x.year,month:x.month||1,days:[]};byMonth[key].days.push(x);});
     Object.entries(byMonth).sort().forEach(([key,m])=>{
-      const sheetName=`${MONTHS_SHORT[m.month]} ${m.year}`.slice(0,31);
+      const sheetName=(MONTHS_SHORT[m.month]+' '+m.year).slice(0,31);
       const aoa=[];
-      aoa.push([schoolName]);
-      if(schoolAddr)aoa.push([schoolAddr]);
-      aoa.push(['สถิติการมาเรียน'+(targetClass!=='all'?`ของนักเรียนชั้น ${CLASS_LABELS[targetClass]||targetClass}`:'ของนักเรียนทั้งโรงเรียน')]);
-      aoa.push([`ประจำเดือน ${MONTHS_TH[m.month]} ${m.year}`]);
-      aoa.push([]);
+      aoa.push([schoolName]);if(schoolAddr)aoa.push([schoolAddr]);
+      aoa.push(['สถิติการมาเรียน'+(targetClass!=='all'?'ของนักเรียนชั้น '+(CLASS_LABELS[targetClass]||targetClass):'ของนักเรียนทั้งโรงเรียน')]);
+      aoa.push(['ประจำเดือน '+MONTHS_TH[m.month]+' '+m.year]);aoa.push([]);
       aoa.push(['วันที่','เดือน/ปี','จำนวนเต็ม','มาเรียน','ป่วย','ลา','ขาด','%','หมายเหตุ']);
-      m.days.forEach(x=>{
-        const pct=x.total?+((x.present/x.total)*100).toFixed(2):0;
-        const ns=[];
-        if(x.leaveNames&&x.leaveNames.length)ns.push('ลา: '+x.leaveNames.join(', '));
-        if(x.sickNames&&x.sickNames.length)ns.push('ป่วย: '+x.sickNames.join(', '));
-        if(x.absentNames&&x.absentNames.length)ns.push('ขาด: '+x.absentNames.join(', '));
-        aoa.push([x.day,x.monthShort+' '+x.year,x.total||0,x.present||0,x.sick||0,x.leave||0,x.absent||0,pct+'%',ns.join(' | ')]);
-      });
+      m.days.forEach(x=>{const pct=x.total?+((x.present/x.total)*100).toFixed(2):0;const ns=[];if(x.leaveNames&&x.leaveNames.length)ns.push('ลา: '+x.leaveNames.join(', '));if(x.sickNames&&x.sickNames.length)ns.push('ป่วย: '+x.sickNames.join(', '));if(x.absentNames&&x.absentNames.length)ns.push('ขาด: '+x.absentNames.join(', '));aoa.push([x.day,x.monthShort+' '+x.year,x.total||0,x.present||0,x.sick||0,x.leave||0,x.absent||0,pct+'%',ns.join(' | ')]);});
       aoa.push([]);
-      aoa.push(['','','','','','','','',`ลงชื่อ ....................................................`]);
-      aoa.push(['','','','','','','','',`( ${teacher?teacher.fullName:'....................................................'} )`]);
-      aoa.push(['','','','','','','','',`${teacher?teacher.position||'ครูประจำชั้น':'ครูประจำชั้น'}`]);
+      aoa.push(['','','','','','','','','ลงชื่อ ....................................................']);
+      aoa.push(['','','','','','','','','( '+(teacher?teacher.fullName:'....................................................')+' )']);
+      aoa.push(['','','','','','','','',''+(teacher?teacher.position||'ครูประจำชั้น':'ครูประจำชั้น')]);
       const ws=XLSX.utils.aoa_to_sheet(aoa);
-      ws['!merges']=[
-        {s:{r:0,c:0},e:{r:0,c:8}},
-        {s:{r:1,c:0},e:{r:1,c:8}},
-        {s:{r:2,c:0},e:{r:2,c:8}},
-        {s:{r:3,c:0},e:{r:3,c:8}}
-      ];
+      ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:8}},{s:{r:1,c:0},e:{r:1,c:8}},{s:{r:2,c:0},e:{r:2,c:8}},{s:{r:3,c:0},e:{r:3,c:8}}];
       ws['!cols']=[{wch:6},{wch:12},{wch:10},{wch:10},{wch:8},{wch:8},{wch:8},{wch:8},{wch:40}];
       XLSX.utils.book_append_sheet(wb,ws,sheetName);
     });
-  }else{
-    showToast('ไม่มีข้อมูลให้ส่งออก','error');return;
-  }
-  
-  const fname=`รายงานการมาเรียน_${scopeText.replace(/\s+/g,'_')}_${todayISO()}.xlsx`;
+  }else{showToast('ไม่มีข้อมูลให้ส่งออก','error');return;}
+  const fname='รายงานการมาเรียน_'+scopeText.replace(/\s+/g,'_')+'_'+todayISO()+'.xlsx';
   XLSX.writeFile(wb,fname);
   showToast('ส่งออก Excel สำเร็จ');
 }
@@ -2394,12 +2156,12 @@ function exportReportExcel(){
 let _myPhotoTemp=null;
 function openMyProfile(){
   if(!CURRENT_USER)return;_myPhotoTemp=null;
-  const u=CURRENT_USER;const av=u.photo?`<img src="${u.photo}" style="width:100%;height:100%;object-fit:cover">`:escapeHtml((u.name||'?').charAt(0));
-  $('myProfileBody').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:18px"><div class="profile-avatar" id="myProfilePhotoPreview" style="width:110px;height:110px;font-size:36px">${av}</div><div class="photo-upload" style="border:none;background:transparent;padding:0"><label for="myPhotoInput" style="cursor:pointer;color:var(--brand);font-weight:700;font-size:13px">📷 เปลี่ยนรูปถ่าย</label><input type="file" id="myPhotoInput" accept="image/*" onchange="handleMyPhotoUpload(event)"></div></div><div class="form-group"><label>ชื่อผู้ใช้งาน</label><input type="text" value="${escapeHtml(u.username)}" disabled style="background:var(--bg)"></div><div class="form-group"><label>ชื่อ-สกุล <span class="req">*</span></label><input type="text" id="myProfileName" value="${escapeHtml(u.name||'')}" required></div><div class="form-group"><label>เบอร์โทรศัพท์</label><input type="tel" id="myProfilePhone" value="${escapeHtml(u.phone||'')}" maxlength="10"></div><div class="form-group"><label>ตำแหน่ง</label><input type="text" id="myProfilePosition" value="${escapeHtml(u.position||'')}"></div>`;
+  const u=CURRENT_USER;const av=u.photo?'<img src="'+u.photo+'" style="width:100%;height:100%;object-fit:cover">':escapeHtml((u.name||'?').charAt(0));
+  $('myProfileBody').innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:18px"><div class="profile-avatar" id="myProfilePhotoPreview" style="width:110px;height:110px;font-size:36px">'+av+'</div><div class="photo-upload" style="border:none;background:transparent;padding:0"><label for="myPhotoInput" style="cursor:pointer;color:var(--brand);font-weight:700;font-size:13px">📷 เปลี่ยนรูปถ่าย</label><input type="file" id="myPhotoInput" accept="image/*" onchange="handleMyPhotoUpload(event)"></div></div><div class="form-group"><label>ชื่อผู้ใช้งาน</label><input type="text" value="'+escapeHtml(u.username)+'" disabled style="background:var(--bg)"></div><div class="form-group"><label>ชื่อ-สกุล <span class="req">*</span></label><input type="text" id="myProfileName" value="'+escapeHtml(u.name||'')+'" required></div><div class="form-group"><label>เบอร์โทรศัพท์</label><input type="tel" id="myProfilePhone" value="'+escapeHtml(u.phone||'')+'" maxlength="10"></div><div class="form-group"><label>ตำแหน่ง</label><input type="text" id="myProfilePosition" value="'+escapeHtml(u.position||'')+'"></div>';
   $('myProfileModalOverlay').classList.add('show');
 }
 function closeMyProfileModal(){$('myProfileModalOverlay').classList.remove('show');}
-async function handleMyPhotoUpload(e){if(!e.target.files[0])return;_myPhotoTemp=await fileToBase64(e.target.files[0],250);$('myProfilePhotoPreview').innerHTML=`<img src="${_myPhotoTemp}" style="width:100%;height:100%;object-fit:cover">`;}
+async function handleMyPhotoUpload(e){if(!e.target.files[0])return;_myPhotoTemp=await fileToBase64(e.target.files[0],250);$('myProfilePhotoPreview').innerHTML='<img src="'+_myPhotoTemp+'" style="width:100%;height:100%;object-fit:cover">';}
 async function saveMyProfile(){
   const name=$('myProfileName').value.trim(),phone=$('myProfilePhone').value.trim(),position=$('myProfilePosition').value.trim();
   if(!name){showToast('กรุณากรอกชื่อ-สกุล','error');return;}
@@ -2451,7 +2213,7 @@ function startPolling(){
 }
 
 /* ============ BOOTSTRAP ============ */
-function buildSignupClasses(){const b=$('suClassesBox');if(!b)return;b.innerHTML=CLASSES.map(c=>`<label><input type="checkbox" value="${c}"> ${CLASS_LABELS[c]||c}</label>`).join('');}
+function buildSignupClasses(){const b=$('suClassesBox');if(!b)return;b.innerHTML=CLASSES.map(c=>'<label><input type="checkbox" value="'+c+'"> '+(CLASS_LABELS[c]||c)+'</label>').join('');}
 document.addEventListener('DOMContentLoaded',async()=>{
   initTheme();
   buildSignupClasses();
@@ -2461,7 +2223,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   window.addEventListener('offline',()=>setSyncStatus(false,'ไม่มีสัญญาณ'));
   try{
     await API.ping();
-    try{const s=await API.getSettings();SCHOOL_SETTINGS=s;localStorage.setItem('bt_settings',JSON.stringify({data:s,ts:Date.now()}));if(s&&s.school_logo){$('authLogo').innerHTML=`<img src="${s.school_logo}">`;}}catch(e){}
+    try{const s=await API.getSettings();SCHOOL_SETTINGS=s;localStorage.setItem('bt_settings',JSON.stringify({data:s,ts:Date.now()}));if(s&&s.school_logo){$('authLogo').innerHTML='<img src="'+s.school_logo+'">';}}catch(e){}
     const ok=await tryAutoLogin();
     if(ok){await enterApp();}
     else{$('authPage').style.display='flex';$('appRoot').style.display='none';setTimeout(()=>$('loginUsername')&&$('loginUsername').focus(),100);}
