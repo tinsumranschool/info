@@ -800,7 +800,10 @@ a{color:inherit}button{font-family:inherit}img{max-width:100%;height:auto;displa
           <div style="font-size:40px;font-weight:800;color:var(--brand-dark);line-height:1" id="academicYearBig">—</div>
           <div style="font-size:13.5px;font-weight:700;color:var(--brand-dark);margin-top:6px" id="academicCurrentTerm">—</div>
         </div>
-        <button class="btn btn-ghost" onclick="loadAcademicInfo()">🔄 โหลดใหม่</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-ghost" onclick="loadAcademicInfo()">🔄 โหลดใหม่</button>
+          <button class="btn btn-primary" onclick="resyncYearManual()" id="btnResyncYear">🔄 Sync Sheet ปีนี้</button>
+        </div>
       </div>
     </div>
     <div class="academic-timeline" id="academicTimeline"></div>
@@ -1119,7 +1122,8 @@ const API={
   getDashboard(d,r){return this.call('getDashboard',{date:d||'',range:r||'30d'});},
   getStudentReport(r,f,t){return this.call('getStudentReport',{studentRow:r,fromDate:f||'',toDate:t||''});},
   getClassDailyTableWithYear(c,fm,fy,tm,ty,ay){return this.call('getClassDailyTable',{class:c||'all',fromMonth:fm,fromYear:fy,toMonth:tm,toYear:ty,academicYear:ay||'current'});},
-  getHomeStats(){return this.call('getHomeStats');},getSyncVersion(){return this.call('getSyncVersion');}
+  getHomeStats(){return this.call('getHomeStats');},getSyncVersion(){return this.call('getSyncVersion');},
+  resyncYear(){return this.call('resyncYear');}
 };
 
 /* ============ UTILS ============ */
@@ -1369,7 +1373,7 @@ async function saveAll(){
   if(!toSave.length){showToast('ยังไม่ได้เลือกสถานะ','error');return;}
   if(currentDate>todayISO()){showToast('ไม่สามารถบันทึกล่วงหน้าได้','error');return;}
   const btn=$('btnSave');btn.disabled=true;btn.innerHTML='<span class="loading"></span> กำลังบันทึก...';
-  try{const res=await API.saveAttendance({date:currentDate,class:currentClass,records:toSave.map(s=>({studentRow:s.row,status:s.status}))});if(res.ok){showToast(`บันทึกสำเร็จ ${res.saved} คน`);clearCache('dashboard');}else throw new Error(res.error);}
+  try{const res=await API.saveAttendance({date:currentDate,class:currentClass,records:toSave.map(s=>({studentRow:s.row,status:s.status}))});if(res.ok){showToast(`บันทึกสำเร็จ ${res.saved} คน · Sync ไป Sheet แล้ว`);clearCache('dashboard');}else throw new Error(res.error);}
   catch(e){showToast('❌ '+e.message,'error');}
   finally{btn.disabled=false;btn.innerHTML='💾 บันทึกทั้งหมด';}
 }
@@ -1703,6 +1707,13 @@ async function finalizePromotion(){
   catch(e){showToast('❌ '+e.message,'error',8000);}
   finally{btn.disabled=false;btn.innerHTML=o;}
 }
+async function resyncYearManual(){
+  if(!confirm('Sync ข้อมูลทั้งปีการศึกษาลง Sheet สถิติ (1-XX / 2-XX)?\nอาจใช้เวลาสักครู่'))return;
+  const btn=$('btnResyncYear');btn.disabled=true;const o=btn.innerHTML;btn.innerHTML='<span class="loading"></span> กำลัง Sync...';
+  try{const r=await API.resyncYear();showToast(`Sync สำเร็จ ${r.days} วัน${r.errors&&r.errors.length?' (มี '+r.errors.length+' ข้อผิดพลาด)':''}`,'success',6000);}
+  catch(e){showToast('❌ '+e.message,'error',6000);}
+  finally{btn.disabled=false;btn.innerHTML=o;}
+}
 
 /* ============ ARCHIVE ============ */
 async function loadArchiveList(){
@@ -1715,9 +1726,10 @@ async function loadArchiveList(){
 }
 function openArchiveRootFolder(){const u=$('btnOpenRootFolder')?.dataset.url;if(u)window.open(u,'_blank');else showToast('ยังไม่มีโฟลเดอร์ Archive','info');}
 
-/* ============ DASHBOARD (⭐ FIXED: filter by scope) ============ */
+/* ============ DASHBOARD ============ */
 let charts={};
 let lastDashboardData=null;
+const CLASS_ORDER=['อ.2','อ.3','ป.1','ป.2','ป.3','ป.4','ป.5','ป.6'];
 
 function getDateRangeForFrame(frame){
   const today=new Date();today.setHours(0,0,0,0);
@@ -1762,7 +1774,6 @@ function initClassScopeSelect(){
   const r=$('selRange');if(r)r.onchange=()=>loadDashboard();
 }
 
-// ⭐⭐⭐ FIX: filter by scope on client-side ⭐⭐⭐
 async function loadDashboard(force){
   const frame=$('selRange')?$('selRange').value:'1month';
   const scope=$('selClassScope')?$('selClassScope').value:'all';
@@ -1773,8 +1784,6 @@ async function loadDashboard(force){
 
   try{
     if(force)clearCache('dashboard');
-
-    // เลือก range ฝั่ง backend — ใช้ 90d ครอบทุกกรณี
     let backendRange='90d';
     if(frame==='today'||frame==='yesterday'||frame==='3days'||frame==='1week')backendRange='7d';
     else if(frame==='1month')backendRange='30d';
@@ -1785,7 +1794,6 @@ async function loadDashboard(force){
 
     if(!dashData||!dashData.trend)throw new Error('ไม่พบข้อมูล');
 
-    // ⭐ กรอง trend ตามช่วงวันที่ + scope
     const fromISO=rangeInfo.from, toISO=rangeInfo.to;
     const trendFiltered=(dashData.trend||[]).filter(d=>d.date>=fromISO&&d.date<=toISO);
 
@@ -1826,7 +1834,6 @@ async function loadDashboard(force){
       byClass[c].percent=byClass[c].total?+(byClass[c].present/byClass[c].total*100).toFixed(2):0;
     });
 
-    // KPI แสดงผล
     if(rangeInfo.daily){
       $('kpiPresent').textContent=Number(totals.present).toLocaleString();
       $('kpiPresentPct').textContent=pctPresent+'% ของทั้งหมด';
@@ -1952,11 +1959,22 @@ async function loadReport(){
   catch(e){c.innerHTML=`<div class="card" style="color:var(--absent);padding:30px;text-align:center">⚠️ ${escapeHtml(e.message)}</div>`;}
 }
 
+/* ⭐ FIXED: renderLeaderboard — รองรับ data.days ที่ backend ส่งมาใหม่ */
 function renderLeaderboard(data){
   const lb=$('reportLeaderboard');if(!lb)return;
-  const byClass=data&&data.byClass?data.byClass:null;
   let classStats={};
-  if(data&&data.students&&data.students.length){
+  // ✅ ใช้ data.days (getClassDailyTableRange) — ถ้า scope=all จะไม่มี leaderboard ข้ามชั้น
+  if(data&&data.days&&data.days.length){
+    if(data.class==='all'){lb.innerHTML='';return;}
+    lb.innerHTML='';return;
+  }
+  // legacy: data.byClass
+  if(data&&data.byClass){
+    Object.entries(data.byClass).forEach(([c,x])=>{
+      const t=x.total||((x.present||0)+(x.leave||0)+(x.absent||0)+(x.sick||0));
+      classStats[c]={present:x.present||0,leave:x.leave||0,absent:x.absent||0,sick:x.sick||0,total:t,pct:t?+((x.present||0)/t*100).toFixed(2):0};
+    });
+  }else if(data&&data.students&&data.students.length){
     data.students.forEach(s=>{
       const c=s.class||'ไม่ระบุ';
       if(!classStats[c])classStats[c]={present:0,leave:0,absent:0,sick:0,total:0};
@@ -1965,11 +1983,6 @@ function renderLeaderboard(data){
       classStats[c].absent+=sum.absent||0;classStats[c].sick+=sum.sick||0;
     });
     Object.values(classStats).forEach(x=>{x.total=x.present+x.leave+x.absent+x.sick;x.pct=x.total?+(x.present/x.total*100).toFixed(2):0;});
-  }else if(byClass){
-    Object.entries(byClass).forEach(([c,x])=>{
-      const t=x.total||((x.present||0)+(x.leave||0)+(x.absent||0)+(x.sick||0));
-      classStats[c]={present:x.present||0,leave:x.leave||0,absent:x.absent||0,sick:x.sick||0,total:t,pct:t?+((x.present||0)/t*100).toFixed(2):0};
-    });
   }
   const entries=Object.entries(classStats).filter(([c])=>CLASSES.indexOf(c)>=0).sort((a,b)=>(b[1].pct||0)-(a[1].pct||0));
   if(!entries.length){lb.innerHTML='';return;}
