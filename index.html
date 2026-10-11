@@ -639,7 +639,7 @@ a{color:inherit}button{font-family:inherit}img{max-width:100%;height:auto;displa
       <label>ชั้น:</label><select id="selClass"></select>
       <label>วันที่:</label><input type="date" id="selDate">
       <button class="btn btn-ghost" onclick="setToday()">วันนี้</button>
-      <button class="btn btn-ghost" onclick="clearCache();loadAttendance()">🔄 รีเฟรชสด</button>
+      <button class="btn btn-ghost" onclick="clearCache();loadAttendance(false,true)">🔄 รีเฟรชสด</button>
       <button class="btn btn-primary" id="btnSave" onclick="saveAll()">💾 บันทึกทั้งหมด</button>
     </div></div>
     <div class="card" style="padding:0;overflow:hidden">
@@ -1084,7 +1084,6 @@ const MENU_ITEMS=[
 
 /* ============ CACHE ============ */
 const _inFlight={};const _memCache={};
-/* ⚡ FIX #5: ลด TTL ฝั่ง frontend ให้เร็วขึ้น */
 const CACHE_TTL={settings:300000,termDates:300000,students:15000,teachers:60000,dashboard:5000};
 async function cachedCall(key,fn,ttl){
   const now=Date.now();const c=_memCache[key];
@@ -1120,7 +1119,6 @@ const API={
   getTeachers(){return this.call('getTeachers');},getTeacherByRow(r){return this.call('getTeacherByRow',{row:r});},addTeacher(d){return this.call('addTeacher',{},'POST',d);},updateTeacher(d){return this.call('updateTeacher',{},'POST',d);},deleteTeacher(d){return this.call('deleteTeacher',{},'POST',d);},
   getSettings(){return this.call('getSettings');},setSetting(k,v){return this.call('setSetting',{},'POST',{key:k,value:v});},
   getAcademicYearInfo(){return this.call('getAcademicYearInfo');},setTermDates(d){return this.call('setTermDates',{},'POST',d);},startNewAcademicYear(d){return this.call('startNewAcademicYear',{},'POST',d||{});},getArchiveHistory(){return this.call('getArchiveHistory');},previewPromotion(){return this.call('previewPromotion');},listArchivedYears(){return this.call('listArchivedYears');},listArchiveFolderContents(){return this.call('listArchiveFolderContents');},
-  /* ⚡ FIX #1: เพิ่ม force param ใน getAttendance */
   getAttendance(d,c,force){return this.call('getAttendance',{date:d,class:c||'',force:force?'1':''});},
   saveAttendance(p){return this.call('saveAttendance',{},'POST',p);},
   getDashboard(d,r,force){return this.call('getDashboard',{date:d||'',range:r||'30d',force:force?'1':''});},
@@ -1303,22 +1301,25 @@ function navigate(page){
   setTimeout(setupAllStickyTables,200);
 }
 
-/* ============ HOME STATS ============ */
-async function loadHomeStats(){
+/* ============ HOME STATS (SILENT) ============ */
+async function loadHomeStats(silent){
   try{
     const d=new Date();
     $('heroDate').textContent=d.toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     const todayFmt=formatThaiDate(todayISO());
     $('heroPresentLabel').textContent='มาวันนี้ ('+todayFmt+')';
-    const [students,home]=await Promise.all([cachedCall('students',()=>API.getStudents(),CACHE_TTL.students),API.getHomeStats().catch(()=>({}))]);
+    const [students,home]=await Promise.all([
+      cachedCall('students',()=>API.getStudents(),CACHE_TTL.students),
+      API.getHomeStats(silent?'':'1').catch(()=>({}))
+    ]);
     $('heroStudents').textContent=students.length;
     try{
-      const dash=await API.getDashboard(todayISO(),'7d',true);
+      const dash=await API.getDashboard(todayISO(),'7d',false);
       if(dash&&dash.totals&&dash.totals.present>0){
         $('heroPresent').textContent=dash.totals.present;
         $('heroPercent').textContent=dash.totals.percent+'%';
-      }else{$('heroPresent').textContent='—';$('heroPercent').textContent='—';}
-    }catch(e){$('heroPresent').textContent='—';$('heroPercent').textContent='—';}
+      }else{$('heroPresent').textContent='0';$('heroPercent').textContent='0%';}
+    }catch(e){}
     const el=$('heroLatest');
     if(home.latestFound){
       const iso=toISODate(home.latestDate);const[y,m,dd]=iso.split('-');
@@ -1328,31 +1329,51 @@ async function loadHomeStats(){
     }else{
       el.innerHTML=`<div style="width:44px;height:44px;border-radius:var(--r-md);background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;display:grid;place-items:center;font-size:20px;flex-shrink:0">⚠️</div><div style="flex:1"><b>ยังไม่มีการบันทึกการมาเรียนในภาคเรียนนี้</b></div>`;
     }
-  }catch(e){console.error(e);}
+  }catch(e){}
 }
 
-/* ============ ATTENDANCE ============ */
-let currentStudents=[],currentClass='อ.2',currentDate=todayISO(),attendanceInit=false;
+/* ============ ATTENDANCE (SMOOTH) ============ */
+let currentStudents=[],currentClass='อ.2',currentDate=todayISO(),attendanceInit=false,_attendanceDirty=false;
 function initAttendance(){
   if(attendanceInit){loadAttendance();return;}
   attendanceInit=true;
   const sc=$('selClass');sc.innerHTML='';
   CLASSES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=CLASS_LABELS[c];sc.appendChild(o);});
   sc.value=currentClass;$('selDate').value=currentDate;$('selDate').max=todayISO();
-  sc.onchange=e=>{currentClass=e.target.value;loadAttendance();};
-  $('selDate').onchange=e=>{currentDate=e.target.value;loadAttendance();};
+  sc.onchange=e=>{currentClass=e.target.value;_attendanceDirty=false;loadAttendance(false,true);};
+  $('selDate').onchange=e=>{currentDate=e.target.value;_attendanceDirty=false;loadAttendance(false,true);};
   loadAttendance();
 }
-function setToday(){currentDate=todayISO();$('selDate').value=currentDate;loadAttendance();}
-/* ⚡ FIX #2: ใช้ force=true อ่านข้อมูลสดทุกครั้ง */
-async function loadAttendance(){
-  $('tbody').innerHTML=`<tr><td colspan="5" style="padding:14px"><div class="skel skel-row"></div><div class="skel skel-row"></div></td></tr>`;
+function setToday(){currentDate=todayISO();$('selDate').value=currentDate;_attendanceDirty=false;loadAttendance(false,true);}
+
+async function loadAttendance(silent,force){
+  const hasData=currentStudents.length>0;
+  if(!silent&&!hasData){
+    $('tbody').innerHTML=`<tr><td colspan="5" style="padding:14px"><div class="skel skel-row"></div><div class="skel skel-row"></div></td></tr>`;
+  }
   try{
     const res=await API.getAttendance(currentDate,currentClass,true);
-    currentStudents=res.records.map(r=>({...r,status:r.status||''}));
-    if(!Object.keys(STUDENT_PHOTO_CACHE).length){const all=await cachedCall('studentsFull',()=>API.getStudentsFull(null,true),CACHE_TTL.students);all.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});}
-    renderTable();setSyncStatus(true,'พร้อม');
-  }catch(e){$('tbody').innerHTML=`<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;}
+    const newRecords=res.records.map(r=>({...r,status:r.status||''}));
+    let changed=newRecords.length!==currentStudents.length;
+    if(!changed){
+      for(let i=0;i<newRecords.length;i++){
+        const o=currentStudents[i],n=newRecords[i];
+        if(!o||o.row!==n.row||o.status!==n.status||o.fullName!==n.fullName||o.nickname!==n.nickname){changed=true;break;}
+      }
+    }
+    if(_attendanceDirty&&silent)return;
+    if(changed||!hasData){
+      currentStudents=newRecords;
+      _attendanceDirty=false;
+      renderTable();
+    }
+    if(!Object.keys(STUDENT_PHOTO_CACHE).length){
+      try{const all=await cachedCall('studentsFull',()=>API.getStudentsFull(null,true),CACHE_TTL.students);all.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});}catch(e){}
+    }
+    setSyncStatus(true,'พร้อม');
+  }catch(e){
+    if(!hasData)$('tbody').innerHTML=`<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;
+  }
 }
 function renderTable(){
   const tb=$('tbody');
@@ -1368,7 +1389,7 @@ function renderTable(){
       <td class="hide-mobile" style="color:var(--ink-3)">${s.nickname?escapeHtml(s.nickname):'—'}</td>
     </tr>`;
   }).join('');
-  tb.querySelectorAll('.status-btn').forEach(b=>{b.onclick=e=>{const i=+e.target.closest('tr').dataset.idx;const s=e.target.dataset.s;currentStudents[i].status=currentStudents[i].status===s?'':s;renderTable();};});
+  tb.querySelectorAll('.status-btn').forEach(b=>{b.onclick=e=>{const i=+e.target.closest('tr').dataset.idx;const s=e.target.dataset.s;currentStudents[i].status=currentStudents[i].status===s?'':s;_attendanceDirty=true;renderTable();};});
   updateCounters();setTimeout(setupAllStickyTables,50);
 }
 function statusBtn(s,cur){const l={'/':'ม','ล':'ล','ข':'ข','ป':'ป'};return `<button class="status-btn ${cur===s?'active':''}" data-s="${s}">${l[s]}</button>`;}
@@ -1378,24 +1399,46 @@ async function saveAll(){
   if(!toSave.length){showToast('ยังไม่ได้เลือกสถานะ','error');return;}
   if(currentDate>todayISO()){showToast('ไม่สามารถบันทึกล่วงหน้าได้','error');return;}
   const btn=$('btnSave');btn.disabled=true;btn.innerHTML='<span class="loading"></span> กำลังบันทึก...';
-  try{const res=await API.saveAttendance({date:currentDate,class:currentClass,records:toSave.map(s=>({studentRow:s.row,status:s.status}))});if(res.ok){showToast(`บันทึกสำเร็จ ${res.saved} คน · Sync ไป Sheet แล้ว`);clearCache();}else throw new Error(res.error);}
-  catch(e){showToast('❌ '+e.message,'error');}
+  try{
+    const res=await API.saveAttendance({date:currentDate,class:currentClass,records:toSave.map(s=>({studentRow:s.row,status:s.status}))});
+    if(res.ok){
+      _attendanceDirty=false;
+      showToast(`บันทึกสำเร็จ ${res.saved} คน · Sync ไป Sheet แล้ว`);
+      clearCache();
+    }else throw new Error(res.error);
+  }catch(e){showToast('❌ '+e.message,'error');}
   finally{btn.disabled=false;btn.innerHTML='💾 บันทึกทั้งหมด';}
 }
 
-/* ============ INFO ============ */
+/* ============ INFO (SMOOTH) ============ */
 let allInfoStudents=[],infoInit=false;
 function initInfoPage(){
   if(!infoInit){infoInit=true;const fc=$('infoClass');CLASSES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=CLASS_LABELS[c];fc.appendChild(o);});fc.onchange=renderInfoStudents;$('infoSearch').oninput=debounce(renderInfoStudents,300);}
   loadInfoStudents();
 }
-async function loadInfoStudents(force){
-  $('infoTbody').innerHTML=`<tr><td colspan="7" style="padding:14px"><div class="skel skel-row"></div><div class="skel skel-row"></div></td></tr>`;
-  try{if(force)clearCache('studentsFull');
-    allInfoStudents=await cachedCall('studentsFull',()=>API.getStudentsFull(null,true),CACHE_TTL.students);
-    allInfoStudents.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});
-    renderInfoStudents();
-  }catch(e){$('infoTbody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;}
+async function loadInfoStudents(force,silent){
+  const hasData=allInfoStudents.length>0;
+  if(!silent&&!hasData){
+    $('infoTbody').innerHTML=`<tr><td colspan="7" style="padding:14px"><div class="skel skel-row"></div><div class="skel skel-row"></div></td></tr>`;
+  }
+  try{
+    if(force)clearCache('studentsFull');
+    const newData=await cachedCall('studentsFull',()=>API.getStudentsFull(null,true),CACHE_TTL.students);
+    let changed=newData.length!==allInfoStudents.length;
+    if(!changed){
+      for(let i=0;i<newData.length;i++){
+        const o=allInfoStudents[i],n=newData[i];
+        if(!o||o.row!==n.row||o.firstName!==n.firstName||o.class!==n.class||o.photo!==n.photo){changed=true;break;}
+      }
+    }
+    if(changed||!hasData){
+      allInfoStudents=newData;
+      allInfoStudents.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});
+      renderInfoStudents();
+    }
+  }catch(e){
+    if(!hasData)$('infoTbody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;
+  }
 }
 function renderInfoStudents(){
   const cls=$('infoClass').value,q=$('infoSearch').value.trim().toLowerCase();
@@ -1437,16 +1480,35 @@ function renderProfile(data){
     <div class="print-signature">${t&&t.signature?`<img src="${t.signature}">`:''}<div>ลงชื่อ ....................................................</div><div>(${escapeHtml(t?t.fullName:'................................')})</div><div>${t?escapeHtml(t.position||'ครูประจำชั้น'):'ครูประจำชั้น'}</div></div>`;
 }
 
-/* ============ STUDENTS CRUD ============ */
+/* ============ STUDENTS CRUD (SMOOTH) ============ */
 let allStudents=[],studentsInit=false,_studentPhotoTemp=null;
 function initStudents(){
   if(!studentsInit){studentsInit=true;const fc=$('filterClassStudents');CLASSES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=CLASS_LABELS[c];fc.appendChild(o);});fc.onchange=renderStudents;$('searchStudent').oninput=debounce(renderStudents,300);const f=$('f_class');CLASSES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=CLASS_LABELS[c];f.appendChild(o);});}
   loadStudents();
 }
-async function loadStudents(force){
-  $('studentTbody').innerHTML=`<tr><td colspan="7" style="padding:14px"><div class="skel skel-row"></div><div class="skel skel-row"></div></td></tr>`;
-  try{if(force)clearCache('studentsFull');allStudents=await cachedCall('studentsFull',()=>API.getStudentsFull(null,true),CACHE_TTL.students);allStudents.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});renderStudents();}
-  catch(e){$('studentTbody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;}
+async function loadStudents(force,silent){
+  const hasData=allStudents.length>0;
+  if(!silent&&!hasData){
+    $('studentTbody').innerHTML=`<tr><td colspan="7" style="padding:14px"><div class="skel skel-row"></div><div class="skel skel-row"></div></td></tr>`;
+  }
+  try{
+    if(force)clearCache('studentsFull');
+    const newData=await cachedCall('studentsFull',()=>API.getStudentsFull(null,true),CACHE_TTL.students);
+    let changed=newData.length!==allStudents.length;
+    if(!changed){
+      for(let i=0;i<newData.length;i++){
+        const o=allStudents[i],n=newData[i];
+        if(!o||o.row!==n.row||o.firstName!==n.firstName||o.class!==n.class||o.photo!==n.photo){changed=true;break;}
+      }
+    }
+    if(changed||!hasData){
+      allStudents=newData;
+      allStudents.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});
+      renderStudents();
+    }
+  }catch(e){
+    if(!hasData)$('studentTbody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;
+  }
 }
 function renderStudents(){
   const cls=$('filterClassStudents').value,q=$('searchStudent').value.trim().toLowerCase();
@@ -1484,7 +1546,7 @@ async function saveStudent(){
   if(!d.firstName&&!d.nickname){showToast('ต้องระบุชื่อ','error');return;}
   if(!d.class){showToast('ต้องเลือกชั้น','error');return;}
   const btn=$('btnSaveStudent');btn.disabled=true;btn.innerHTML='<span class="loading"></span>';
-  try{const res=d.row?await API.updateStudent(d):await API.addStudent(d);if(res.ok){showToast(d.row?'แก้ไขสำเร็จ':`เพิ่มนักเรียนสำเร็จ (ที่ ${res.no})`);closeStudentModal();clearCache();setTimeout(loadStudents,400);}else throw new Error(res.error);}
+  try{const res=d.row?await API.updateStudent(d):await API.addStudent(d);if(res.ok){showToast(d.row?'แก้ไขสำเร็จ':`เพิ่มนักเรียนสำเร็จ (ที่ ${res.no})`);closeStudentModal();clearCache();setTimeout(()=>loadStudents(true,true),400);}else throw new Error(res.error);}
   catch(e){showToast('❌ '+e.message,'error');}
   finally{btn.disabled=false;btn.innerHTML='💾 บันทึก';}
 }
@@ -1544,7 +1606,7 @@ async function loadDeleteRequests(){
     }).join('');
   }catch(e){c.innerHTML=`<div class="card" style="color:var(--absent);padding:40px">⚠️ ${escapeHtml(e.message)}</div>`;}
 }
-async function approveDeleteReq(id){if(!confirm(`⚠️ ยืนยันอนุมัติคำขอ #${id}?`))return;try{const r=await API.approveDelete({requestId:id});showToast(r.message||'อนุมัติสำเร็จ');loadDeleteRequests();if(currentPage==='students')loadStudents(true);}catch(e){showToast('❌ '+e.message,'error');}}
+async function approveDeleteReq(id){if(!confirm(`⚠️ ยืนยันอนุมัติคำขอ #${id}?`))return;try{const r=await API.approveDelete({requestId:id});showToast(r.message||'อนุมัติสำเร็จ');loadDeleteRequests();if(currentPage==='students')loadStudents(true,true);}catch(e){showToast('❌ '+e.message,'error');}}
 async function rejectDeleteReq(id){const reason=prompt('เหตุผลการปฏิเสธ (ไม่บังคับ):');if(reason===null)return;try{const r=await API.rejectDelete({requestId:id,reason});showToast(r.message||'ปฏิเสธสำเร็จ');loadDeleteRequests();}catch(e){showToast('❌ '+e.message,'error');}}
 async function cancelDeleteReq(id){if(!confirm('ยกเลิกคำขอนี้?'))return;try{await API.cancelDeleteRequest({requestId:id});showToast('ยกเลิกสำเร็จ');loadDeleteRequests();}catch(e){showToast('❌ '+e.message,'error');}}
 
@@ -1626,11 +1688,23 @@ async function confirmTransfer(){
   try{const r=await API.transferAdmin({targetRow:tr});showToast(r.message||'โอนสิทธิ์สำเร็จ','success',5000);closeTransferModal();setTimeout(()=>doLogout(),2500);}catch(e){showToast('❌ '+e.message,'error');}
 }
 
-/* ============ TEACHERS ============ */
+/* ============ TEACHERS (SMOOTH) ============ */
 let _teacherPhotoTemp=null,_teacherSigTemp=null;
-async function loadTeachers(){
-  $('teachersGrid').innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px"><span class="loading dark"></span></div>`;
-  try{TEACHER_LIST_CACHE=await cachedCall('teachers',()=>API.getTeachers(),CACHE_TTL.teachers);renderTeachers();}catch(e){showToast('⚠️ '+e.message,'error');}
+async function loadTeachers(silent){
+  if(!silent||!TEACHER_LIST_CACHE.length){
+    $('teachersGrid').innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px"><span class="loading dark"></span></div>`;
+  }
+  try{
+    const newData=await cachedCall('teachers',()=>API.getTeachers(),CACHE_TTL.teachers);
+    let changed=newData.length!==TEACHER_LIST_CACHE.length;
+    if(!changed){
+      for(let i=0;i<newData.length;i++){
+        const o=TEACHER_LIST_CACHE[i],n=newData[i];
+        if(!o||o.row!==n.row||o.fullName!==n.fullName||o.position!==n.position||o.photo!==n.photo){changed=true;break;}
+      }
+    }
+    if(changed){TEACHER_LIST_CACHE=newData;renderTeachers();}
+  }catch(e){if(!silent)showToast('⚠️ '+e.message,'error');}
 }
 function renderTeachers(){
   $('btnAddTeacher').style.display=isManager()?'':'none';
@@ -1660,11 +1734,11 @@ async function saveTeacher(){
   const d={row:$('t_row').value?+$('t_row').value:null,id:$('t_id').value?+$('t_id').value:null,prefix:$('t_prefix').value,firstName:$('t_firstName').value.trim(),lastName:$('t_lastName').value.trim(),position:$('t_position').value,classes:cls,photo:_teacherPhotoTemp!==null?_teacherPhotoTemp:($('t_photo').value||''),signature:_teacherSigTemp!==null?_teacherSigTemp:($('t_signature').value||'')};
   if(!d.firstName){showToast('ต้องระบุชื่อครู','error');return;}
   const btn=$('btnSaveTeacher');btn.disabled=true;btn.innerHTML='<span class="loading"></span>';
-  try{const r=d.row?await API.updateTeacher(d):await API.addTeacher(d);if(r.ok){showToast(d.row?'แก้ไขสำเร็จ':'เพิ่มครูสำเร็จ');closeTeacherModal();clearCache('teachers');setTimeout(loadTeachers,400);}else throw new Error(r.error);}
+  try{const r=d.row?await API.updateTeacher(d):await API.addTeacher(d);if(r.ok){showToast(d.row?'แก้ไขสำเร็จ':'เพิ่มครูสำเร็จ');closeTeacherModal();clearCache('teachers');setTimeout(()=>loadTeachers(true),400);}else throw new Error(r.error);}
   catch(e){showToast('❌ '+e.message,'error');}
   finally{btn.disabled=false;btn.innerHTML='💾 บันทึก';}
 }
-async function deleteTeacherReq(row,name){if(!confirm(`⚠️ ลบครู "${name}"?`))return;try{await API.deleteTeacher({row});showToast('ลบสำเร็จ');clearCache('teachers');setTimeout(loadTeachers,400);}catch(e){showToast('❌ '+e.message,'error');}}
+async function deleteTeacherReq(row,name){if(!confirm(`⚠️ ลบครู "${name}"?`))return;try{await API.deleteTeacher({row});showToast('ลบสำเร็จ');clearCache('teachers');setTimeout(()=>loadTeachers(true),400);}catch(e){showToast('❌ '+e.message,'error');}}
 
 /* ============ ACADEMIC ============ */
 async function initAcademic(){if(!isAdmin()){showToast('เฉพาะผู้ดูแลระบบ','error');navigate('home');return;}await loadAcademicInfo();await loadPromotionPreview();await loadPromotionHistory();}
@@ -1731,7 +1805,7 @@ async function loadArchiveList(){
 }
 function openArchiveRootFolder(){const u=$('btnOpenRootFolder')?.dataset.url;if(u)window.open(u,'_blank');else showToast('ยังไม่มีโฟลเดอร์ Archive','info');}
 
-/* ============ DASHBOARD ============ */
+/* ============ DASHBOARD (SMOOTH) ============ */
 let charts={};
 let lastDashboardData=null;
 const CLASS_ORDER=['อ.2','อ.3','ป.1','ป.2','ป.3','ป.4','ป.5','ป.6'];
@@ -1779,13 +1853,15 @@ function initClassScopeSelect(){
   const r=$('selRange');if(r)r.onchange=()=>loadDashboard(true);
 }
 
-async function loadDashboard(force){
+async function loadDashboard(force,silent){
   const frame=$('selRange')?$('selRange').value:'1month';
   const scope=$('selClassScope')?$('selClassScope').value:'all';
   const rangeInfo=getDateRangeForFrame(frame);
+  const hasData=$('kpiPresent')&&$('kpiPresent').textContent&&$('kpiPresent').textContent!=='...'&&$('kpiPresent').textContent!=='—';
 
-  ['kpiPresent','kpiLeave','kpiAbsent','kpiSick'].forEach(id=>{if($(id))$(id).textContent='...';});
-  ['kpiPresentPct','kpiLeaveSub','kpiAbsentSub','kpiSickSub'].forEach(id=>{if($(id))$(id).textContent='กำลังโหลด...';});
+  if(!silent&&!hasData){
+    ['kpiPresent','kpiLeave','kpiAbsent','kpiSick'].forEach(id=>{if($(id))$(id).textContent='...';});
+  }
 
   try{
     if(force)clearCache('dashboard');
@@ -1795,7 +1871,6 @@ async function loadDashboard(force){
     else backendRange='90d';
 
     const dashData=await API.getDashboard(todayISO(),backendRange,true);
-
     if(!dashData||!dashData.trend)throw new Error('ไม่พบข้อมูล');
 
     const fromISO=rangeInfo.from, toISO=rangeInfo.to;
@@ -1879,10 +1954,10 @@ async function loadDashboard(force){
     setSyncStatus(true,'พร้อม');
   }catch(e){
     console.error('Dashboard error:',e);
-    showToast('⚠️ โหลด Dashboard ล้มเหลว: '+e.message,'error',5000);
-    ['kpiPresent','kpiLeave','kpiAbsent','kpiSick'].forEach(id=>{if($(id))$(id).textContent='—';});
-    ['kpiPresentPct','kpiLeaveSub','kpiAbsentSub','kpiSickSub'].forEach(id=>{if($(id))$(id).textContent='—';});
-    ['chartClass','chartDonut','chartStack'].forEach(id=>showChartEmpty(id,e.message||'ไม่สามารถโหลดข้อมูลได้'));
+    if(!silent) showToast('⚠️ โหลด Dashboard ล้มเหลว: '+e.message,'error',5000);
+    if(!hasData){
+      ['kpiPresent','kpiLeave','kpiAbsent','kpiSick'].forEach(id=>{if($(id))$(id).textContent='—';});
+    }
   }
 }
 
@@ -1955,12 +2030,13 @@ async function loadReportYearOptions(){
 }
 function onReportYearChange(){const v=$('reportAcademicYear').value;if(v==='current'||v===''){$('fromYear').value=CURRENT_YEAR;$('toYear').value=CURRENT_YEAR;}else{$('fromYear').value=v;$('toYear').value=v;}}
 
-async function loadReport(){
-  const c=$('reportContent');c.innerHTML=`<div class="card" style="text-align:center;padding:50px"><span class="loading dark"></span> กำลังประมวลผล...</div>`;
+async function loadReport(silent){
+  const c=$('reportContent');
+  if(!silent||!LAST_REPORT_DATA){c.innerHTML=`<div class="card" style="text-align:center;padding:50px"><span class="loading dark"></span> กำลังประมวลผล...</div>`;}
   await loadTermDates();updateTermBanner();
   const cls=$('reportScope').value;const fm=+$('fromMonth').value,fy=+$('fromYear').value,tm=+$('toMonth').value,ty=+$('toYear').value,ay=$('reportAcademicYear').value;
   try{const d=await API.getClassDailyTableWithYear(cls,fm,fy,tm,ty,ay,true);LAST_REPORT_DATA=d;renderReportTable(d);setSyncStatus(true,'พร้อม');}
-  catch(e){c.innerHTML=`<div class="card" style="color:var(--absent);padding:30px;text-align:center">⚠️ ${escapeHtml(e.message)}</div>`;}
+  catch(e){if(!silent)c.innerHTML=`<div class="card" style="color:var(--absent);padding:30px;text-align:center">⚠️ ${escapeHtml(e.message)}</div>`;}
 }
 
 function renderLeaderboard(data){
@@ -2200,39 +2276,40 @@ async function saveChangePwd(){
   finally{btn.disabled=false;btn.innerHTML='💾 บันทึก';}
 }
 
-/* ============ POLLING ============ */
+/* ============ POLLING (SMOOTH 5s) ============ */
 let lastSyncVersion=null,_pollingInterval=null;
-/* ⚡ FIX #4: clear cache ทั้งหมดเมื่อ version เปลี่ยน */
 async function checkSync(){
   if(!CURRENT_USER)return;
+  if(document.hidden)return;
   try{
     const r=await API.getSyncVersion();
     if(lastSyncVersion!==null&&r.version!==lastSyncVersion){
       clearCache();
-      showToast('ข้อมูลอัปเดต','info',1500);
-      refreshCurrentPage();
+      silentRefresh();
     }
     lastSyncVersion=r.version;
     setSyncStatus(true,'พร้อม');
   }catch(e){setSyncStatus(false,'เชื่อมต่อไม่ได้');}
 }
-function refreshCurrentPage(){
-  if(currentPage==='dashboard')loadDashboard(true);
-  else if(currentPage==='attendance')loadAttendance();
-  else if(currentPage==='info')loadInfoStudents(true);
-  else if(currentPage==='students')loadStudents(true);
-  else if(currentPage==='teachers')loadTeachers();
-  else if(currentPage==='reports')loadReport();
-  else if(currentPage==='archive')loadArchiveList();
-  else if(currentPage==='users')loadUsers();
-  else if(currentPage==='deletes')loadDeleteRequests();
-  else if(currentPage==='academic'){loadAcademicInfo();loadPromotionPreview();loadPromotionHistory();}
-  else if(currentPage==='home')loadHomeStats();
+async function silentRefresh(){
+  if(currentPage==='attendance'){
+    if(_attendanceDirty)return;
+    await loadAttendance(true,true);
+  }
+  else if(currentPage==='dashboard')await loadDashboard(false,true);
+  else if(currentPage==='info')await loadInfoStudents(false,true);
+  else if(currentPage==='students')await loadStudents(false,true);
+  else if(currentPage==='teachers')await loadTeachers(true);
+  else if(currentPage==='reports')await loadReport(true);
+  else if(currentPage==='archive')await loadArchiveList();
+  else if(currentPage==='users')await loadUsers();
+  else if(currentPage==='deletes')await loadDeleteRequests();
+  else if(currentPage==='academic'){await loadAcademicInfo();}
+  else if(currentPage==='home')await loadHomeStats(true);
 }
-/* ⚡ FIX #3: ลด polling จาก 90s → 10s */
 function startPolling(){
   if(_pollingInterval)clearInterval(_pollingInterval);
-  _pollingInterval=setInterval(checkSync,10000);
+  _pollingInterval=setInterval(checkSync,5000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkSync();});
 }
 
@@ -2255,7 +2332,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
 });
 let _pullStart=0,_pullActive=false;
 document.addEventListener('touchstart',e=>{if(window.scrollY===0&&$('appRoot').style.display!=='none'){_pullStart=e.touches[0].clientY;_pullActive=true;}},{passive:true});
-document.addEventListener('touchmove',e=>{if(!_pullActive)return;const d=e.touches[0].clientY-_pullStart;if(d>80&&window.scrollY===0){_pullActive=false;refreshCurrentPage();showToast('รีเฟรชข้อมูลแล้ว','info',1500);}},{passive:true});
+document.addEventListener('touchmove',e=>{if(!_pullActive)return;const d=e.touches[0].clientY-_pullStart;if(d>80&&window.scrollY===0){_pullActive=false;silentRefresh();showToast('รีเฟรชข้อมูลแล้ว','info',1500);}},{passive:true});
 document.addEventListener('touchend',()=>{_pullActive=false;});
 </script>
 </body>
