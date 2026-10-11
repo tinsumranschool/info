@@ -1052,7 +1052,9 @@ a{color:inherit}button{font-family:inherit}img{max-width:100%;height:auto;displa
 
 <script>
 /* ============ CONFIG ============ */
-const API_URL='https://script.google.com/macros/s/AKfycbxd0DC9DPw9Wmf5XdCZP5Tc-ZRLgAxvpNvmWHO419SapbxEBt_rsVyLoshdSlo56rlE/exec';
+// ⚠️⚠️⚠️ สำคัญมาก: นำ URL ของ Google Apps Script ที่คุณ Deploy ใหม่ มาใส่ตรงนี้ ⚠️⚠️⚠️
+const API_URL='YOUR_NEW_APPS_SCRIPT_WEB_APP_URL'; 
+
 const CLASSES=['อ.2','อ.3','ป.1','ป.2','ป.3','ป.4','ป.5','ป.6'];
 const CLASS_LABELS={'อ.2':'อนุบาล 2','อ.3':'อนุบาล 3','ป.1':'ประถมศึกษาปีที่ 1','ป.2':'ประถมศึกษาปีที่ 2','ป.3':'ประถมศึกษาปีที่ 3','ป.4':'ประถมศึกษาปีที่ 4','ป.5':'ประถมศึกษาปีที่ 5','ป.6':'ประถมศึกษาปีที่ 6'};
 const MONTHS_TH=['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
@@ -1301,7 +1303,7 @@ function navigate(page){
   setTimeout(setupAllStickyTables,200);
 }
 
-/* ============ HOME STATS (SILENT) ============ */
+/* ============ HOME STATS ============ */
 async function loadHomeStats(silent){
   try{
     const d=new Date();
@@ -1332,7 +1334,7 @@ async function loadHomeStats(silent){
   }catch(e){}
 }
 
-/* ============ ATTENDANCE (SMOOTH) ============ */
+/* ============ ATTENDANCE ============ */
 let currentStudents=[],currentClass='อ.2',currentDate=todayISO(),attendanceInit=false,_attendanceDirty=false;
 function initAttendance(){
   if(attendanceInit){loadAttendance();return;}
@@ -1410,7 +1412,7 @@ async function saveAll(){
   finally{btn.disabled=false;btn.innerHTML='💾 บันทึกทั้งหมด';}
 }
 
-/* ============ INFO (SMOOTH) ============ */
+/* ============ INFO ============ */
 let allInfoStudents=[],infoInit=false;
 function initInfoPage(){
   if(!infoInit){infoInit=true;const fc=$('infoClass');CLASSES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=CLASS_LABELS[c];fc.appendChild(o);});fc.onchange=renderInfoStudents;$('infoSearch').oninput=debounce(renderInfoStudents,300);}
@@ -1480,7 +1482,7 @@ function renderProfile(data){
     <div class="print-signature">${t&&t.signature?`<img src="${t.signature}">`:''}<div>ลงชื่อ ....................................................</div><div>(${escapeHtml(t?t.fullName:'................................')})</div><div>${t?escapeHtml(t.position||'ครูประจำชั้น'):'ครูประจำชั้น'}</div></div>`;
 }
 
-/* ============ STUDENTS CRUD (SMOOTH) ============ */
+/* ============ STUDENTS CRUD ============ */
 let allStudents=[],studentsInit=false,_studentPhotoTemp=null;
 function initStudents(){
   if(!studentsInit){studentsInit=true;const fc=$('filterClassStudents');CLASSES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=CLASS_LABELS[c];fc.appendChild(o);});fc.onchange=renderStudents;$('searchStudent').oninput=debounce(renderStudents,300);const f=$('f_class');CLASSES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=CLASS_LABELS[c];f.appendChild(o);});}
@@ -1688,7 +1690,7 @@ async function confirmTransfer(){
   try{const r=await API.transferAdmin({targetRow:tr});showToast(r.message||'โอนสิทธิ์สำเร็จ','success',5000);closeTransferModal();setTimeout(()=>doLogout(),2500);}catch(e){showToast('❌ '+e.message,'error');}
 }
 
-/* ============ TEACHERS (SMOOTH) ============ */
+/* ============ TEACHERS ============ */
 let _teacherPhotoTemp=null,_teacherSigTemp=null;
 async function loadTeachers(silent){
   if(!silent||!TEACHER_LIST_CACHE.length){
@@ -1805,7 +1807,7 @@ async function loadArchiveList(){
 }
 function openArchiveRootFolder(){const u=$('btnOpenRootFolder')?.dataset.url;if(u)window.open(u,'_blank');else showToast('ยังไม่มีโฟลเดอร์ Archive','info');}
 
-/* ============ DASHBOARD (SMOOTH) ============ */
+/* ============ DASHBOARD ============ */
 let charts={};
 let lastDashboardData=null;
 const CLASS_ORDER=['อ.2','อ.3','ป.1','ป.2','ป.3','ป.4','ป.5','ป.6'];
@@ -2042,10 +2044,7 @@ async function loadReport(silent){
 function renderLeaderboard(data){
   const lb=$('reportLeaderboard');if(!lb)return;
   let classStats={};
-  if(data&&data.days&&data.days.length){
-    if(data.class==='all'){lb.innerHTML='';return;}
-    lb.innerHTML='';return;
-  }
+  if(data&&data.days&&data.days.length){lb.innerHTML='';return;}
   if(data&&data.byClass){
     Object.entries(data.byClass).forEach(([c,x])=>{
       const t=x.total||((x.present||0)+(x.leave||0)+(x.absent||0)+(x.sick||0));
@@ -2276,7 +2275,7 @@ async function saveChangePwd(){
   finally{btn.disabled=false;btn.innerHTML='💾 บันทึก';}
 }
 
-/* ============ POLLING (SMOOTH 5s) ============ */
+/* ============ POLLING ============ */
 let lastSyncVersion=null,_pollingInterval=null;
 async function checkSync(){
   if(!CURRENT_USER)return;
@@ -2328,7 +2327,11 @@ document.addEventListener('DOMContentLoaded',async()=>{
     const ok=await tryAutoLogin();
     if(ok){await enterApp();}
     else{$('authPage').style.display='flex';$('appRoot').style.display='none';setTimeout(()=>$('loginUsername')&&$('loginUsername').focus(),100);}
-  }catch(e){console.error(e);showToast('⚠️ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้','error',5000);$('authPage').style.display='flex';}
+  }catch(e){
+    console.error(e);
+    showToast('⚠️ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบ URL ของ Google Apps Script','error',8000);
+    $('authPage').style.display='flex';
+  }
 });
 let _pullStart=0,_pullActive=false;
 document.addEventListener('touchstart',e=>{if(window.scrollY===0&&$('appRoot').style.display!=='none'){_pullStart=e.touches[0].clientY;_pullActive=true;}},{passive:true});
