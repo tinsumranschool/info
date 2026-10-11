@@ -639,6 +639,7 @@ a{color:inherit}button{font-family:inherit}img{max-width:100%;height:auto;displa
       <label>ชั้น:</label><select id="selClass"></select>
       <label>วันที่:</label><input type="date" id="selDate">
       <button class="btn btn-ghost" onclick="setToday()">วันนี้</button>
+      <button class="btn btn-ghost" onclick="clearCache();loadAttendance()">🔄 รีเฟรชสด</button>
       <button class="btn btn-primary" id="btnSave" onclick="saveAll()">💾 บันทึกทั้งหมด</button>
     </div></div>
     <div class="card" style="padding:0;overflow:hidden">
@@ -1083,7 +1084,8 @@ const MENU_ITEMS=[
 
 /* ============ CACHE ============ */
 const _inFlight={};const _memCache={};
-const CACHE_TTL={settings:1800000,termDates:1800000,students:120000,teachers:600000,dashboard:60000};
+/* ⚡ FIX #5: ลด TTL ฝั่ง frontend ให้เร็วขึ้น */
+const CACHE_TTL={settings:300000,termDates:300000,students:15000,teachers:60000,dashboard:5000};
 async function cachedCall(key,fn,ttl){
   const now=Date.now();const c=_memCache[key];
   if(c&&(now-c.ts)<(ttl||CACHE_TTL[key]||60000))return c.data;
@@ -1113,16 +1115,18 @@ const API={
   changePassword(d){return this.call('changePassword',{},'POST',d);},updateMyProfile(d){return this.call('updateMyProfile',{},'POST',d);},
   getUsers(){return this.call('getUsers');},getPendingUsers(){return this.call('getPendingUsers');},getAdminCount(){return this.call('getAdminCount');},
   addUser(d){return this.call('addUser',{},'POST',d);},updateUser(d){return this.call('updateUser',{},'POST',d);},deleteUser(d){return this.call('deleteUser',{},'POST',d);},approveUser(d){return this.call('approveUser',{},'POST',d);},rejectUser(d){return this.call('rejectUser',{},'POST',d);},transferAdmin(d){return this.call('transferAdmin',{},'POST',d);},
-  getStudents(c){return this.call('getStudents',c?{class:c}:{});},getStudentsFull(c){return this.call('getStudentsFull',c?{class:c}:{});},getStudentByRow(r){return this.call('getStudentByRow',{row:r});},addStudent(d){return this.call('addStudent',{},'POST',d);},updateStudent(d){return this.call('updateStudent',{},'POST',d);},syncStructure(){return this.call('syncStructure');},
+  getStudents(c){return this.call('getStudents',c?{class:c}:{});},getStudentsFull(c,force){return this.call('getStudentsFull',c?{class:c,force:force?'1':''}:{force:force?'1':''});},getStudentByRow(r){return this.call('getStudentByRow',{row:r});},addStudent(d){return this.call('addStudent',{},'POST',d);},updateStudent(d){return this.call('updateStudent',{},'POST',d);},syncStructure(){return this.call('syncStructure');},
   requestDeleteStudent(d){return this.call('requestDeleteStudent',{},'POST',d);},getDeleteRequests(){return this.call('getDeleteRequests');},getPendingCount(){return this.call('getPendingCount');},approveDelete(d){return this.call('approveDelete',{},'POST',d);},rejectDelete(d){return this.call('rejectDelete',{},'POST',d);},cancelDeleteRequest(d){return this.call('cancelDeleteRequest',{},'POST',d);},
   getTeachers(){return this.call('getTeachers');},getTeacherByRow(r){return this.call('getTeacherByRow',{row:r});},addTeacher(d){return this.call('addTeacher',{},'POST',d);},updateTeacher(d){return this.call('updateTeacher',{},'POST',d);},deleteTeacher(d){return this.call('deleteTeacher',{},'POST',d);},
   getSettings(){return this.call('getSettings');},setSetting(k,v){return this.call('setSetting',{},'POST',{key:k,value:v});},
   getAcademicYearInfo(){return this.call('getAcademicYearInfo');},setTermDates(d){return this.call('setTermDates',{},'POST',d);},startNewAcademicYear(d){return this.call('startNewAcademicYear',{},'POST',d||{});},getArchiveHistory(){return this.call('getArchiveHistory');},previewPromotion(){return this.call('previewPromotion');},listArchivedYears(){return this.call('listArchivedYears');},listArchiveFolderContents(){return this.call('listArchiveFolderContents');},
-  getAttendance(d,c){return this.call('getAttendance',{date:d,class:c||''});},saveAttendance(p){return this.call('saveAttendance',{},'POST',p);},
-  getDashboard(d,r){return this.call('getDashboard',{date:d||'',range:r||'30d'});},
+  /* ⚡ FIX #1: เพิ่ม force param ใน getAttendance */
+  getAttendance(d,c,force){return this.call('getAttendance',{date:d,class:c||'',force:force?'1':''});},
+  saveAttendance(p){return this.call('saveAttendance',{},'POST',p);},
+  getDashboard(d,r,force){return this.call('getDashboard',{date:d||'',range:r||'30d',force:force?'1':''});},
   getStudentReport(r,f,t){return this.call('getStudentReport',{studentRow:r,fromDate:f||'',toDate:t||''});},
-  getClassDailyTableWithYear(c,fm,fy,tm,ty,ay){return this.call('getClassDailyTable',{class:c||'all',fromMonth:fm,fromYear:fy,toMonth:tm,toYear:ty,academicYear:ay||'current'});},
-  getHomeStats(){return this.call('getHomeStats');},getSyncVersion(){return this.call('getSyncVersion');},
+  getClassDailyTableWithYear(c,fm,fy,tm,ty,ay,force){return this.call('getClassDailyTable',{class:c||'all',fromMonth:fm,fromYear:fy,toMonth:tm,toYear:ty,academicYear:ay||'current',force:force?'1':''});},
+  getHomeStats(force){return this.call('getHomeStats',{force:force?'1':''});},getSyncVersion(){return this.call('getSyncVersion');},
   resyncYear(){return this.call('resyncYear');}
 };
 
@@ -1309,7 +1313,7 @@ async function loadHomeStats(){
     const [students,home]=await Promise.all([cachedCall('students',()=>API.getStudents(),CACHE_TTL.students),API.getHomeStats().catch(()=>({}))]);
     $('heroStudents').textContent=students.length;
     try{
-      const dash=await API.getDashboard(todayISO(),'7d');
+      const dash=await API.getDashboard(todayISO(),'7d',true);
       if(dash&&dash.totals&&dash.totals.present>0){
         $('heroPresent').textContent=dash.totals.present;
         $('heroPercent').textContent=dash.totals.percent+'%';
@@ -1340,12 +1344,13 @@ function initAttendance(){
   loadAttendance();
 }
 function setToday(){currentDate=todayISO();$('selDate').value=currentDate;loadAttendance();}
+/* ⚡ FIX #2: ใช้ force=true อ่านข้อมูลสดทุกครั้ง */
 async function loadAttendance(){
   $('tbody').innerHTML=`<tr><td colspan="5" style="padding:14px"><div class="skel skel-row"></div><div class="skel skel-row"></div></td></tr>`;
   try{
-    const res=await API.getAttendance(currentDate,currentClass);
+    const res=await API.getAttendance(currentDate,currentClass,true);
     currentStudents=res.records.map(r=>({...r,status:r.status||''}));
-    if(!Object.keys(STUDENT_PHOTO_CACHE).length){const all=await cachedCall('studentsFull',()=>API.getStudentsFull(),CACHE_TTL.students);all.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});}
+    if(!Object.keys(STUDENT_PHOTO_CACHE).length){const all=await cachedCall('studentsFull',()=>API.getStudentsFull(null,true),CACHE_TTL.students);all.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});}
     renderTable();setSyncStatus(true,'พร้อม');
   }catch(e){$('tbody').innerHTML=`<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;}
 }
@@ -1373,7 +1378,7 @@ async function saveAll(){
   if(!toSave.length){showToast('ยังไม่ได้เลือกสถานะ','error');return;}
   if(currentDate>todayISO()){showToast('ไม่สามารถบันทึกล่วงหน้าได้','error');return;}
   const btn=$('btnSave');btn.disabled=true;btn.innerHTML='<span class="loading"></span> กำลังบันทึก...';
-  try{const res=await API.saveAttendance({date:currentDate,class:currentClass,records:toSave.map(s=>({studentRow:s.row,status:s.status}))});if(res.ok){showToast(`บันทึกสำเร็จ ${res.saved} คน · Sync ไป Sheet แล้ว`);clearCache('dashboard');}else throw new Error(res.error);}
+  try{const res=await API.saveAttendance({date:currentDate,class:currentClass,records:toSave.map(s=>({studentRow:s.row,status:s.status}))});if(res.ok){showToast(`บันทึกสำเร็จ ${res.saved} คน · Sync ไป Sheet แล้ว`);clearCache();}else throw new Error(res.error);}
   catch(e){showToast('❌ '+e.message,'error');}
   finally{btn.disabled=false;btn.innerHTML='💾 บันทึกทั้งหมด';}
 }
@@ -1387,7 +1392,7 @@ function initInfoPage(){
 async function loadInfoStudents(force){
   $('infoTbody').innerHTML=`<tr><td colspan="7" style="padding:14px"><div class="skel skel-row"></div><div class="skel skel-row"></div></td></tr>`;
   try{if(force)clearCache('studentsFull');
-    allInfoStudents=await cachedCall('studentsFull',()=>API.getStudentsFull(),CACHE_TTL.students);
+    allInfoStudents=await cachedCall('studentsFull',()=>API.getStudentsFull(null,true),CACHE_TTL.students);
     allInfoStudents.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});
     renderInfoStudents();
   }catch(e){$('infoTbody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;}
@@ -1440,7 +1445,7 @@ function initStudents(){
 }
 async function loadStudents(force){
   $('studentTbody').innerHTML=`<tr><td colspan="7" style="padding:14px"><div class="skel skel-row"></div><div class="skel skel-row"></div></td></tr>`;
-  try{if(force)clearCache('studentsFull');allStudents=await cachedCall('studentsFull',()=>API.getStudentsFull(),CACHE_TTL.students);allStudents.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});renderStudents();}
+  try{if(force)clearCache('studentsFull');allStudents=await cachedCall('studentsFull',()=>API.getStudentsFull(null,true),CACHE_TTL.students);allStudents.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});renderStudents();}
   catch(e){$('studentTbody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;}
 }
 function renderStudents(){
@@ -1479,7 +1484,7 @@ async function saveStudent(){
   if(!d.firstName&&!d.nickname){showToast('ต้องระบุชื่อ','error');return;}
   if(!d.class){showToast('ต้องเลือกชั้น','error');return;}
   const btn=$('btnSaveStudent');btn.disabled=true;btn.innerHTML='<span class="loading"></span>';
-  try{const res=d.row?await API.updateStudent(d):await API.addStudent(d);if(res.ok){showToast(d.row?'แก้ไขสำเร็จ':`เพิ่มนักเรียนสำเร็จ (ที่ ${res.no})`);closeStudentModal();clearCache('students');clearCache('studentsFull');setTimeout(loadStudents,400);}else throw new Error(res.error);}
+  try{const res=d.row?await API.updateStudent(d):await API.addStudent(d);if(res.ok){showToast(d.row?'แก้ไขสำเร็จ':`เพิ่มนักเรียนสำเร็จ (ที่ ${res.no})`);closeStudentModal();clearCache();setTimeout(loadStudents,400);}else throw new Error(res.error);}
   catch(e){showToast('❌ '+e.message,'error');}
   finally{btn.disabled=false;btn.innerHTML='💾 บันทึก';}
 }
@@ -1770,8 +1775,8 @@ function toggleChartCard(id,show){const el=$(id);if(el)el.style.display=show?'':
 
 function initClassScopeSelect(){
   const s=$('selClassScope');if(!s)return;
-  if(s.options.length<=1){CLASSES.forEach(c=>s.add(new Option(CLASS_LABELS[c],c)));s.onchange=()=>loadDashboard();}
-  const r=$('selRange');if(r)r.onchange=()=>loadDashboard();
+  if(s.options.length<=1){CLASSES.forEach(c=>s.add(new Option(CLASS_LABELS[c],c)));s.onchange=()=>loadDashboard(true);}
+  const r=$('selRange');if(r)r.onchange=()=>loadDashboard(true);
 }
 
 async function loadDashboard(force){
@@ -1789,8 +1794,7 @@ async function loadDashboard(force){
     else if(frame==='1month')backendRange='30d';
     else backendRange='90d';
 
-    const dashData=await cachedCall('dashboard_'+backendRange,
-      ()=>API.getDashboard(todayISO(),backendRange),CACHE_TTL.dashboard);
+    const dashData=await API.getDashboard(todayISO(),backendRange,true);
 
     if(!dashData||!dashData.trend)throw new Error('ไม่พบข้อมูล');
 
@@ -1955,20 +1959,17 @@ async function loadReport(){
   const c=$('reportContent');c.innerHTML=`<div class="card" style="text-align:center;padding:50px"><span class="loading dark"></span> กำลังประมวลผล...</div>`;
   await loadTermDates();updateTermBanner();
   const cls=$('reportScope').value;const fm=+$('fromMonth').value,fy=+$('fromYear').value,tm=+$('toMonth').value,ty=+$('toYear').value,ay=$('reportAcademicYear').value;
-  try{const d=await API.getClassDailyTableWithYear(cls,fm,fy,tm,ty,ay);LAST_REPORT_DATA=d;renderReportTable(d);setSyncStatus(true,'พร้อม');}
+  try{const d=await API.getClassDailyTableWithYear(cls,fm,fy,tm,ty,ay,true);LAST_REPORT_DATA=d;renderReportTable(d);setSyncStatus(true,'พร้อม');}
   catch(e){c.innerHTML=`<div class="card" style="color:var(--absent);padding:30px;text-align:center">⚠️ ${escapeHtml(e.message)}</div>`;}
 }
 
-/* ⭐ FIXED: renderLeaderboard — รองรับ data.days ที่ backend ส่งมาใหม่ */
 function renderLeaderboard(data){
   const lb=$('reportLeaderboard');if(!lb)return;
   let classStats={};
-  // ✅ ใช้ data.days (getClassDailyTableRange) — ถ้า scope=all จะไม่มี leaderboard ข้ามชั้น
   if(data&&data.days&&data.days.length){
     if(data.class==='all'){lb.innerHTML='';return;}
     lb.innerHTML='';return;
   }
-  // legacy: data.byClass
   if(data&&data.byClass){
     Object.entries(data.byClass).forEach(([c,x])=>{
       const t=x.total||((x.present||0)+(x.leave||0)+(x.absent||0)+(x.sick||0));
@@ -2201,10 +2202,19 @@ async function saveChangePwd(){
 
 /* ============ POLLING ============ */
 let lastSyncVersion=null,_pollingInterval=null;
+/* ⚡ FIX #4: clear cache ทั้งหมดเมื่อ version เปลี่ยน */
 async function checkSync(){
   if(!CURRENT_USER)return;
-  try{const r=await API.getSyncVersion();if(lastSyncVersion!==null&&r.version!==lastSyncVersion){showToast('ข้อมูลอัปเดต','info',2000);refreshCurrentPage();clearCache('dashboard');}lastSyncVersion=r.version;setSyncStatus(true,'พร้อม');}
-  catch(e){setSyncStatus(false,'เชื่อมต่อไม่ได้');}
+  try{
+    const r=await API.getSyncVersion();
+    if(lastSyncVersion!==null&&r.version!==lastSyncVersion){
+      clearCache();
+      showToast('ข้อมูลอัปเดต','info',1500);
+      refreshCurrentPage();
+    }
+    lastSyncVersion=r.version;
+    setSyncStatus(true,'พร้อม');
+  }catch(e){setSyncStatus(false,'เชื่อมต่อไม่ได้');}
 }
 function refreshCurrentPage(){
   if(currentPage==='dashboard')loadDashboard(true);
@@ -2219,9 +2229,10 @@ function refreshCurrentPage(){
   else if(currentPage==='academic'){loadAcademicInfo();loadPromotionPreview();loadPromotionHistory();}
   else if(currentPage==='home')loadHomeStats();
 }
+/* ⚡ FIX #3: ลด polling จาก 90s → 10s */
 function startPolling(){
   if(_pollingInterval)clearInterval(_pollingInterval);
-  _pollingInterval=setInterval(checkSync,90000);
+  _pollingInterval=setInterval(checkSync,10000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkSync();});
 }
 
