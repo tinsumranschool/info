@@ -634,7 +634,7 @@ a{color:inherit}button{font-family:inherit}img{max-width:100%;height:auto;displa
 
   <!-- ATTENDANCE -->
   <div class="page" id="page-attendance">
-    <div class="page-head"><h1 class="page-title">บันทึกการมาเรียน</h1><p class="page-sub">เลือกชั้นและวันที่ · <span style="color:var(--absent);font-weight:600">ไม่สามารถบันทึกล่วงหน้าได้</span></p></div>
+    <div class="page-head"><h1 class="page-title">บันทึกการมาเรียน</h1><p class="page-sub">เลือกชั้นและวันที่ · <b style="color:var(--present-dark)">ติ๊กครบทุกคน = บันทึกอัตโนมัติ</b> · <span style="color:var(--absent);font-weight:600">ไม่สามารถบันทึกล่วงหน้าได้</span></p></div>
     <div class="card"><div class="filter-bar">
       <label>ชั้น:</label><select id="selClass"></select>
       <label>วันที่:</label><input type="date" id="selDate">
@@ -642,10 +642,20 @@ a{color:inherit}button{font-family:inherit}img{max-width:100%;height:auto;displa
       <button class="btn btn-ghost" onclick="clearCache();loadAttendance(false,true)">🔄 รีเฟรชสด</button>
       <button class="btn btn-primary" id="btnSave" onclick="saveAll()">💾 บันทึกทั้งหมด</button>
     </div></div>
+    <div class="info-banner" id="attendanceHint">
+      <span class="icon">💡</span>
+      <span><b>ติ๊กสถานะให้ครบทุกคน</b> ระบบจะบันทึกอัตโนมัติ หรือกดปุ่ม <b>บันทึกทั้งหมด</b> ก็ได้</span>
+    </div>
     <div class="card" style="padding:0;overflow:hidden">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;flex-wrap:wrap;gap:10px">
         <h2 class="card-title" style="margin:0">รายชื่อนักเรียน</h2>
-        <div style="font-size:12.5px;color:var(--ink-3);font-weight:600">มา <b id="cPresent" style="color:var(--present-dark)">0</b> · ลา <b id="cLeave" style="color:var(--leave-dark)">0</b> · ขาด <b id="cAbsent" style="color:var(--absent-dark)">0</b> · ป่วย <b id="cSick" style="color:var(--sick-dark)">0</b></div>
+        <div style="font-size:12.5px;color:var(--ink-3);font-weight:600">
+          <span id="markProgress" style="font-weight:700;color:var(--brand)">0/0</span> ·
+          มา <b id="cPresent" style="color:var(--present-dark)">0</b> ·
+          ลา <b id="cLeave" style="color:var(--leave-dark)">0</b> ·
+          ขาด <b id="cAbsent" style="color:var(--absent-dark)">0</b> ·
+          ป่วย <b id="cSick" style="color:var(--sick-dark)">0</b>
+        </div>
       </div>
       <div class="table-info-bar" style="border-radius:0;border-left:0;border-right:0"><span>📋 รายชื่อในชั้น</span></div>
       <div class="sticky-table-wrap" id="attendanceTableWrap" style="border:none;border-radius:0">
@@ -1051,8 +1061,11 @@ a{color:inherit}button{font-family:inherit}img{max-width:100%;height:auto;displa
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-/* ============ CONFIG ============ */
-const API_URL='https://script.google.com/macros/s/AKfycbwPAnIe6oRmeJjZFsuRZY6bkJIaHxgLt4FPY7OhYx3VB-jZxze7UC998zn-9rBp0Qi5/exec';
+/* ============================================================
+ * ⚙️ CONFIG — แก้ URL ตรงนี้ ⚙️
+ * ============================================================ */
+// ⭐ หลัง Deploy Web App ใหม่ → คัดลอก URL มาวางที่นี่
+const API_URL='https://script.google.com/macros/s/AKfycbxd0DC9DPw9Wmf5XdCZP5Tc-ZRLgAxvpNvmWHO419SapbxEBt_rsVyLoshdSlo56rlE/exec';
 
 const CLASSES=['อ.2','อ.3','ป.1','ป.2','ป.3','ป.4','ป.5','ป.6'];
 const CLASS_LABELS={'อ.2':'อนุบาล 2','อ.3':'อนุบาล 3','ป.1':'ประถมศึกษาปีที่ 1','ป.2':'ประถมศึกษาปีที่ 2','ป.3':'ประถมศึกษาปีที่ 3','ป.4':'ประถมศึกษาปีที่ 4','ป.5':'ประถมศึกษาปีที่ 5','ป.6':'ประถมศึกษาปีที่ 6'};
@@ -1060,6 +1073,7 @@ const MONTHS_TH=['','มกราคม','กุมภาพันธ์','ม�
 const MONTHS_SHORT=['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const WEEKDAYS_SHORT=['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
 const STATUS_LABELS={'/':'มา','ล':'ลา','ข':'ขาด','ป':'ป่วย'};
+const VALID_STATUS=['/','ล','ข','ป'];
 const APPROVER_ROLES=['admin','director','deputy_director'];
 const MANAGER_ROLES=['admin','director','deputy_director'];
 const LS_KEY_TOKEN='bt_token',LS_KEY_USER='bt_user',LS_KEY_EXPIRES='bt_expires',LS_KEY_REMEMBER='bt_remember',LS_KEY_THEME='bt_theme';
@@ -1095,7 +1109,7 @@ async function cachedCall(key,fn,ttl){
 }
 function clearCache(key){if(key)delete _memCache[key];else Object.keys(_memCache).forEach(k=>delete _memCache[k]);}
 
-/* ============ API ============ */
+/* ============ API (with better error handling) ============ */
 const API={
   async call(a,p={},m='GET',b=null){
     const x={action:a,...p};if(CURRENT_TOKEN)x.token=CURRENT_TOKEN;
@@ -1105,10 +1119,23 @@ const API={
     if(b){o.method='POST';o.headers={'Content-Type':'text/plain;charset=utf-8'};o.body=JSON.stringify(b);}
     const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),90000);o.signal=ctrl.signal;
     let r;
-    try{r=await fetch(url,o);}
-    catch(err){clearTimeout(timer);if(err.name==='AbortError')throw new Error('หมดเวลาเชื่อมต่อ (90 วินาที)');throw new Error('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: '+err.message);}
+    try{
+      r=await fetch(url,o);
+    }catch(err){
+      clearTimeout(timer);
+      console.error('[API] fetch error:',err,'URL:',url);
+      if(err.name==='AbortError')throw new Error('หมดเวลาเชื่อมต่อ (90 วินาที)');
+      throw new Error('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้');
+    }
     finally{clearTimeout(timer);}
-    const t=await r.text();let j;try{j=JSON.parse(t);}catch(e){throw new Error('Response ไม่ถูกต้อง: '+t.slice(0,200));}
+    const t=await r.text();
+    console.log('[API] status:',r.status,'response:',t.slice(0,200));
+    if(!r.ok){
+      if(r.status===404) throw new Error('ไม่พบ Web App (404) — กรุณา Deploy ใหม่ แล้วอัปเดต API_URL');
+      if(r.status===401||r.status===403) throw new Error('ไม่มีสิทธิ์เข้าถึง — ตั้ง Who has access = Anyone');
+      throw new Error('HTTP '+r.status);
+    }
+    let j;try{j=JSON.parse(t);}catch(e){throw new Error('Response ไม่ถูกต้อง (ไม่ใช่ JSON) — กรุณาตรวจสอบว่า Deploy เป็น Web app และ Authorize แล้ว');}
     if(j.error)throw new Error(j.error);return j;
   },
   ping(){return this.call('ping');},signup(d){return this.call('signup',{},'POST',d);},login(d){return this.call('login',{},'POST',d);},logout(){return this.call('logout');},checkSession(){return this.call('checkSession');},
@@ -1122,6 +1149,7 @@ const API={
   getAcademicYearInfo(){return this.call('getAcademicYearInfo');},setTermDates(d){return this.call('setTermDates',{},'POST',d);},startNewAcademicYear(d){return this.call('startNewAcademicYear',{},'POST',d||{});},getArchiveHistory(){return this.call('getArchiveHistory');},previewPromotion(){return this.call('previewPromotion');},listArchivedYears(){return this.call('listArchivedYears');},listArchiveFolderContents(){return this.call('listArchiveFolderContents');},
   getAttendance(d,c,force){return this.call('getAttendance',{date:d,class:c||'',force:force?'1':''});},
   saveAttendance(p){return this.call('saveAttendance',{},'POST',p);},
+  clearAttendance(p){return this.call('clearAttendance',{},'POST',p);},
   getDashboard(d,r,force){return this.call('getDashboard',{date:d||'',range:r||'30d',force:force?'1':''});},
   getStudentReport(r,f,t){return this.call('getStudentReport',{studentRow:r,fromDate:f||'',toDate:t||''});},
   getClassDailyTableWithYear(c,fm,fy,tm,ty,ay,force){return this.call('getClassDailyTable',{class:c||'all',fromMonth:fm,fromYear:fy,toMonth:tm,toYear:ty,academicYear:ay||'current',force:force?'1':''});},
@@ -1205,7 +1233,7 @@ async function doLogin(){
     if(rem){localStorage.setItem(LS_KEY_TOKEN,res.token);localStorage.setItem(LS_KEY_USER,JSON.stringify(res.user));localStorage.setItem(LS_KEY_EXPIRES,res.expiresAt);localStorage.setItem(LS_KEY_REMEMBER,'1');}
     else{sessionStorage.setItem(LS_KEY_TOKEN,res.token);sessionStorage.setItem(LS_KEY_USER,JSON.stringify(res.user));sessionStorage.setItem(LS_KEY_EXPIRES,res.expiresAt);}
     showToast('ยินดีต้อนรับ '+res.user.name);await enterApp();
-  }catch(e){showToast(e.message,'error');}finally{btn.disabled=false;btn.innerHTML=o;}
+  }catch(e){showToast(e.message,'error',6000);}finally{btn.disabled=false;btn.innerHTML=o;}
 }
 async function doSignup(){
   const u=$('suUsername').value.trim(),p=$('suPassword').value,p2=$('suPassword2').value,n=$('suName').value.trim(),ph=$('suPhone').value.trim(),r=$('suRole').value,po=$('suPosition').value;
@@ -1333,8 +1361,9 @@ async function loadHomeStats(silent){
   }catch(e){}
 }
 
-/* ============ ATTENDANCE ============ */
-let currentStudents=[],currentClass='อ.2',currentDate=todayISO(),attendanceInit=false,_attendanceDirty=false;
+/* ============ ATTENDANCE (STRICT) ============ */
+let currentStudents=[],currentClass='อ.2',currentDate=todayISO(),attendanceInit=false,_attendanceDirty=false,_saving=false,_autoSaveTimer=null;
+
 function initAttendance(){
   if(attendanceInit){loadAttendance();return;}
   attendanceInit=true;
@@ -1355,6 +1384,7 @@ async function loadAttendance(silent,force){
   try{
     const res=await API.getAttendance(currentDate,currentClass,true);
     const newRecords=res.records.map(r=>({...r,status:r.status||''}));
+
     let changed=newRecords.length!==currentStudents.length;
     if(!changed){
       for(let i=0;i<newRecords.length;i++){
@@ -1362,7 +1392,8 @@ async function loadAttendance(silent,force){
         if(!o||o.row!==n.row||o.status!==n.status||o.fullName!==n.fullName||o.nickname!==n.nickname){changed=true;break;}
       }
     }
-    if(_attendanceDirty&&silent)return;
+    if(_attendanceDirty&&silent&&!changed) return;
+
     if(changed||!hasData){
       currentStudents=newRecords;
       _attendanceDirty=false;
@@ -1371,11 +1402,13 @@ async function loadAttendance(silent,force){
     if(!Object.keys(STUDENT_PHOTO_CACHE).length){
       try{const all=await cachedCall('studentsFull',()=>API.getStudentsFull(null,true),CACHE_TTL.students);all.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});}catch(e){}
     }
+    updateSaveIndicator();
     setSyncStatus(true,'พร้อม');
   }catch(e){
     if(!hasData)$('tbody').innerHTML=`<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;
   }
 }
+
 function renderTable(){
   const tb=$('tbody');
   if(!currentStudents.length){tb.innerHTML=`<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">👥</div><h3>ไม่พบนักเรียนในชั้นนี้</h3></div></td></tr>`;updateCounters();return;}
@@ -1390,26 +1423,109 @@ function renderTable(){
       <td class="hide-mobile" style="color:var(--ink-3)">${s.nickname?escapeHtml(s.nickname):'—'}</td>
     </tr>`;
   }).join('');
-  tb.querySelectorAll('.status-btn').forEach(b=>{b.onclick=e=>{const i=+e.target.closest('tr').dataset.idx;const s=e.target.dataset.s;currentStudents[i].status=currentStudents[i].status===s?'':s;_attendanceDirty=true;renderTable();};});
+  tb.querySelectorAll('.status-btn').forEach(b=>{
+    b.onclick=e=>{
+      const tr=e.target.closest('tr');
+      const i=+tr.dataset.idx;
+      const s=e.target.dataset.s;
+      handleStatusClick(i,s);
+    };
+  });
   updateCounters();setTimeout(setupAllStickyTables,50);
 }
+
 function statusBtn(s,cur){const l={'/':'ม','ล':'ล','ข':'ข','ป':'ป'};return `<button class="status-btn ${cur===s?'active':''}" data-s="${s}">${l[s]}</button>`;}
-function updateCounters(){const c={p:0,l:0,a:0,s:0};currentStudents.forEach(x=>{if(x.status==='/')c.p++;else if(x.status==='ล')c.l++;else if(x.status==='ข')c.a++;else if(x.status==='ป')c.s++;});$('cPresent').textContent=c.p;$('cLeave').textContent=c.l;$('cAbsent').textContent=c.a;$('cSick').textContent=c.s;}
-async function saveAll(){
-  const toSave=currentStudents.filter(s=>s.status);
-  if(!toSave.length){showToast('ยังไม่ได้เลือกสถานะ','error');return;}
-  if(currentDate>todayISO()){showToast('ไม่สามารถบันทึกล่วงหน้าได้','error');return;}
-  const btn=$('btnSave');btn.disabled=true;btn.innerHTML='<span class="loading"></span> กำลังบันทึก...';
-  try{
-    const res=await API.saveAttendance({date:currentDate,class:currentClass,records:toSave.map(s=>({studentRow:s.row,status:s.status}))});
-    if(res.ok){
-      _attendanceDirty=false;
-      showToast(`บันทึกสำเร็จ ${res.saved} คน · Sync ไป Sheet แล้ว`);
-      clearCache();
-    }else throw new Error(res.error);
-  }catch(e){showToast('❌ '+e.message,'error');}
-  finally{btn.disabled=false;btn.innerHTML='💾 บันทึกทั้งหมด';}
+
+function updateCounters(){
+  const c={p:0,l:0,a:0,s:0,marked:0};
+  currentStudents.forEach(x=>{
+    if(x.status){c.marked++;}
+    if(x.status==='/')c.p++;else if(x.status==='ล')c.l++;
+    else if(x.status==='ข')c.a++;else if(x.status==='ป')c.s++;
+  });
+  $('cPresent').textContent=c.p;$('cLeave').textContent=c.l;
+  $('cAbsent').textContent=c.a;$('cSick').textContent=c.s;
+  const mp=$('markProgress');
+  if(mp){
+    const total=currentStudents.length;
+    mp.textContent=c.marked+'/'+total;
+    if(total>0&&c.marked===total){mp.style.color='var(--present-dark)';}
+    else if(c.marked>0){mp.style.color='var(--leave-dark)';}
+    else {mp.style.color='var(--brand)';}
+  }
 }
+
+function handleStatusClick(idx,status){
+  const st=currentStudents[idx];
+  if(!st)return;
+  if(st.status===status){ st.status=''; }
+  else { st.status=status; }
+  _attendanceDirty=true;
+  renderTable();
+  updateSaveIndicator();
+  // ⭐ auto-save เมื่อครบทุกคน
+  const total=currentStudents.length;
+  const marked=currentStudents.filter(x=>x.status&&x.status.trim()).length;
+  if(total>0&&marked===total){
+    if(_autoSaveTimer)clearTimeout(_autoSaveTimer);
+    _autoSaveTimer=setTimeout(()=>{ doSave(true); },500);
+  }
+}
+
+function updateSaveIndicator(){
+  const btn=$('btnSave');
+  if(!btn)return;
+  const total=currentStudents.length;
+  const marked=currentStudents.filter(x=>x.status&&x.status.trim()).length;
+  if(total===0){ btn.textContent='💾 บันทึกทั้งหมด'; btn.disabled=false; return; }
+  if(marked===0){ btn.textContent='💾 บันทึกทั้งหมด'; btn.disabled=false; return; }
+  if(marked===total){ btn.textContent=`✅ ครบแล้ว (${total}/${total}) — กดบันทึกซ้ำได้`; btn.disabled=false; }
+  else { btn.textContent=`💾 บันทึก (${marked}/${total})`; btn.disabled=false; }
+}
+
+async function doSave(isAuto){
+  if(_saving)return;
+  const total=currentStudents.length;
+  const marked=currentStudents.filter(x=>x.status&&x.status.trim()).length;
+
+  if(total===0){ if(!isAuto)showToast('ไม่พบนักเรียนในชั้นนี้','error'); return; }
+  if(marked===0){ if(!isAuto)showToast('ยังไม่ได้เลือกสถานะ','error'); return; }
+  if(marked<total){
+    if(!isAuto){
+      const miss=currentStudents.filter(x=>!x.status||!x.status.trim());
+      const names=miss.slice(0,3).map(x=>x.nickname||x.fullName).filter(Boolean).join(', ');
+      showToast(`ต้องระบุสถานะให้ครบทุกคน (ขาดอีก ${miss.length} คน: ${names}${miss.length>3?'...':''})`,'error',5000);
+    }
+    return;
+  }
+
+  _saving=true;
+  const btn=$('btnSave');
+  if(!isAuto){ btn.disabled=true; btn.innerHTML='<span class="loading"></span> กำลังบันทึก...'; }
+
+  try{
+    const records=currentStudents.map(s=>({studentRow:s.row,status:s.status}));
+    const res=await API.saveAttendance({
+      date: currentDate,
+      class: currentClass,
+      records: records
+    });
+    if(res&&res.ok){
+      _attendanceDirty=false;
+      showToast(isAuto?`✅ บันทึกอัตโนมัติ ${res.saved} คน`:`✅ บันทึกสำเร็จ ${res.saved} คน`,'success',isAuto?2000:3000);
+      clearCache();
+    } else {
+      throw new Error((res&&res.error)||'บันทึกไม่สำเร็จ');
+    }
+  }catch(e){
+    showToast('❌ '+e.message,'error',6000);
+  }finally{
+    _saving=false;
+    if(!isAuto){ btn.disabled=false; updateSaveIndicator(); }
+  }
+}
+
+async function saveAll(){ await doSave(false); }
 
 /* ============ INFO ============ */
 let allInfoStudents=[],infoInit=false;
@@ -1419,27 +1535,16 @@ function initInfoPage(){
 }
 async function loadInfoStudents(force,silent){
   const hasData=allInfoStudents.length>0;
-  if(!silent&&!hasData){
-    $('infoTbody').innerHTML=`<tr><td colspan="7" style="padding:14px"><div class="skel skel-row"></div><div class="skel skel-row"></div></td></tr>`;
-  }
+  if(!silent&&!hasData){$('infoTbody').innerHTML=`<tr><td colspan="7" style="padding:14px"><div class="skel skel-row"></div><div class="skel skel-row"></div></td></tr>`;}
   try{
     if(force)clearCache('studentsFull');
     const newData=await cachedCall('studentsFull',()=>API.getStudentsFull(null,true),CACHE_TTL.students);
     let changed=newData.length!==allInfoStudents.length;
     if(!changed){
-      for(let i=0;i<newData.length;i++){
-        const o=allInfoStudents[i],n=newData[i];
-        if(!o||o.row!==n.row||o.firstName!==n.firstName||o.class!==n.class||o.photo!==n.photo){changed=true;break;}
-      }
+      for(let i=0;i<newData.length;i++){const o=allInfoStudents[i],n=newData[i];if(!o||o.row!==n.row||o.firstName!==n.firstName||o.class!==n.class||o.photo!==n.photo){changed=true;break;}}
     }
-    if(changed||!hasData){
-      allInfoStudents=newData;
-      allInfoStudents.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});
-      renderInfoStudents();
-    }
-  }catch(e){
-    if(!hasData)$('infoTbody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;
-  }
+    if(changed||!hasData){allInfoStudents=newData;allInfoStudents.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});renderInfoStudents();}
+  }catch(e){if(!hasData)$('infoTbody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;}
 }
 function renderInfoStudents(){
   const cls=$('infoClass').value,q=$('infoSearch').value.trim().toLowerCase();
@@ -1489,27 +1594,16 @@ function initStudents(){
 }
 async function loadStudents(force,silent){
   const hasData=allStudents.length>0;
-  if(!silent&&!hasData){
-    $('studentTbody').innerHTML=`<tr><td colspan="7" style="padding:14px"><div class="skel skel-row"></div><div class="skel skel-row"></div></td></tr>`;
-  }
+  if(!silent&&!hasData){$('studentTbody').innerHTML=`<tr><td colspan="7" style="padding:14px"><div class="skel skel-row"></div><div class="skel skel-row"></div></td></tr>`;}
   try{
     if(force)clearCache('studentsFull');
     const newData=await cachedCall('studentsFull',()=>API.getStudentsFull(null,true),CACHE_TTL.students);
     let changed=newData.length!==allStudents.length;
     if(!changed){
-      for(let i=0;i<newData.length;i++){
-        const o=allStudents[i],n=newData[i];
-        if(!o||o.row!==n.row||o.firstName!==n.firstName||o.class!==n.class||o.photo!==n.photo){changed=true;break;}
-      }
+      for(let i=0;i<newData.length;i++){const o=allStudents[i],n=newData[i];if(!o||o.row!==n.row||o.firstName!==n.firstName||o.class!==n.class||o.photo!==n.photo){changed=true;break;}}
     }
-    if(changed||!hasData){
-      allStudents=newData;
-      allStudents.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});
-      renderStudents();
-    }
-  }catch(e){
-    if(!hasData)$('studentTbody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;
-  }
+    if(changed||!hasData){allStudents=newData;allStudents.forEach(s=>{if(s.photo)STUDENT_PHOTO_CACHE[s.row]=s.photo;});renderStudents();}
+  }catch(e){if(!hasData)$('studentTbody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--absent)">⚠️ ${escapeHtml(e.message)}</td></tr>`;}
 }
 function renderStudents(){
   const cls=$('filterClassStudents').value,q=$('searchStudent').value.trim().toLowerCase();
@@ -1692,17 +1786,12 @@ async function confirmTransfer(){
 /* ============ TEACHERS ============ */
 let _teacherPhotoTemp=null,_teacherSigTemp=null;
 async function loadTeachers(silent){
-  if(!silent||!TEACHER_LIST_CACHE.length){
-    $('teachersGrid').innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px"><span class="loading dark"></span></div>`;
-  }
+  if(!silent||!TEACHER_LIST_CACHE.length){$('teachersGrid').innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px"><span class="loading dark"></span></div>`;}
   try{
     const newData=await cachedCall('teachers',()=>API.getTeachers(),CACHE_TTL.teachers);
     let changed=newData.length!==TEACHER_LIST_CACHE.length;
     if(!changed){
-      for(let i=0;i<newData.length;i++){
-        const o=TEACHER_LIST_CACHE[i],n=newData[i];
-        if(!o||o.row!==n.row||o.fullName!==n.fullName||o.position!==n.position||o.photo!==n.photo){changed=true;break;}
-      }
+      for(let i=0;i<newData.length;i++){const o=TEACHER_LIST_CACHE[i],n=newData[i];if(!o||o.row!==n.row||o.fullName!==n.fullName||o.position!==n.position||o.photo!==n.photo){changed=true;break;}}
     }
     if(changed){TEACHER_LIST_CACHE=newData;renderTeachers();}
   }catch(e){if(!silent)showToast('⚠️ '+e.message,'error');}
@@ -1808,7 +1897,6 @@ function openArchiveRootFolder(){const u=$('btnOpenRootFolder')?.dataset.url;if(
 
 /* ============ DASHBOARD ============ */
 let charts={};
-let lastDashboardData=null;
 const CLASS_ORDER=['อ.2','อ.3','ป.1','ป.2','ป.3','ป.4','ป.5','ป.6'];
 
 function getDateRangeForFrame(frame){
@@ -1859,11 +1947,7 @@ async function loadDashboard(force,silent){
   const scope=$('selClassScope')?$('selClassScope').value:'all';
   const rangeInfo=getDateRangeForFrame(frame);
   const hasData=$('kpiPresent')&&$('kpiPresent').textContent&&$('kpiPresent').textContent!=='...'&&$('kpiPresent').textContent!=='—';
-
-  if(!silent&&!hasData){
-    ['kpiPresent','kpiLeave','kpiAbsent','kpiSick'].forEach(id=>{if($(id))$(id).textContent='...';});
-  }
-
+  if(!silent&&!hasData){['kpiPresent','kpiLeave','kpiAbsent','kpiSick'].forEach(id=>{if($(id))$(id).textContent='...';});}
   try{
     if(force)clearCache('dashboard');
     let backendRange='90d';
@@ -1956,9 +2040,7 @@ async function loadDashboard(force,silent){
   }catch(e){
     console.error('Dashboard error:',e);
     if(!silent) showToast('⚠️ โหลด Dashboard ล้มเหลว: '+e.message,'error',5000);
-    if(!hasData){
-      ['kpiPresent','kpiLeave','kpiAbsent','kpiSick'].forEach(id=>{if($(id))$(id).textContent='—';});
-    }
+    if(!hasData){['kpiPresent','kpiLeave','kpiAbsent','kpiSick'].forEach(id=>{if($(id))$(id).textContent='—';});}
   }
 }
 
@@ -2326,11 +2408,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
     const ok=await tryAutoLogin();
     if(ok){await enterApp();}
     else{$('authPage').style.display='flex';$('appRoot').style.display='none';setTimeout(()=>$('loginUsername')&&$('loginUsername').focus(),100);}
-  }catch(e){
-    console.error(e);
-    showToast('⚠️ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบ URL ของ Google Apps Script','error',8000);
-    $('authPage').style.display='flex';
-  }
+  }catch(e){console.error(e);showToast('⚠️ '+e.message,'error',6000);$('authPage').style.display='flex';}
 });
 let _pullStart=0,_pullActive=false;
 document.addEventListener('touchstart',e=>{if(window.scrollY===0&&$('appRoot').style.display!=='none'){_pullStart=e.touches[0].clientY;_pullActive=true;}},{passive:true});
